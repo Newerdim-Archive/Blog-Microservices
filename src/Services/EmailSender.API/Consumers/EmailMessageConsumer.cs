@@ -37,7 +37,7 @@ namespace EmailSender.API.Consumers
             {
                 if (string.IsNullOrWhiteSpace(to))
                 {
-                    _logger.LogWarning($"Email target is null or empty.");
+                    _logger.LogWarning($"Email target is null or empty. {context}");
                     continue;
                 }
 
