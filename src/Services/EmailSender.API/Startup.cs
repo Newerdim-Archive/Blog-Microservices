@@ -26,7 +26,7 @@ namespace EmailSender.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCustomMassTransit(Configuration.GetSection("rabbitmq"));
-            services.AddSmtpSettings(Configuration);
+            services.AddCustomSettings(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

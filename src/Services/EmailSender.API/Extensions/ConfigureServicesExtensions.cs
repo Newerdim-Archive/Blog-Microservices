@@ -42,10 +42,9 @@ namespace EmailSender.API.Extensions
             services.AddMassTransitHostedService();
         }
 
-        public static void AddSmtpSettings(this IServiceCollection services, IConfiguration configuration)
+        public static void AddCustomSettings(this IServiceCollection services, IConfiguration configuration)
         {
-            var appSettingsSection = configuration.GetSection("smtp");
-            services.Configure<SmtpSettings>(appSettingsSection);
+            services.Configure<SmtpSettings>(configuration.GetSection("smtp"));
         }
     }
 }
