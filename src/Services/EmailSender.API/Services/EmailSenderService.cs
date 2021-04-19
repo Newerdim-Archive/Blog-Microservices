@@ -19,6 +19,11 @@ namespace EmailSender.API.Services
 
         public async Task SendAsync(MailMessage message)
         {
+            if (message is null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
             using var client = new SmtpClient(_smtpSettings.Hostname, _smtpSettings.Port);
             await client.SendMailAsync(message);
         }
