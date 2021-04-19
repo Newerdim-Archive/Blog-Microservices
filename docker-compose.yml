@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  emailsender.api:
+    image: ${DOCKER_REGISTRY-}emailsenderapi
+    build:
+      context: .
+      dockerfile: src/Services/EmailSender.API/Dockerfile
+
+  smtp:
+    container_name: smtp
+    image: namshi/smtp
+    restart: always
+    ports:
+      - "25:25"
