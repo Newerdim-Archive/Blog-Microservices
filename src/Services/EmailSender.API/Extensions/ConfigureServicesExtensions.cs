@@ -39,6 +39,8 @@ namespace EmailSender.API.Extensions
                 }));
             });
 
+            services.AddScoped<EmailMessageConsumer>();
+
             services.AddMassTransitHostedService();
         }
 
