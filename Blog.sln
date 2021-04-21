@@ -31,11 +31,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailSender.API", "src\Serv
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{460771F7-6D28-4D70-844E-5F742A6CF1C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Queue", "src\Building Blocks\Queue\Queue.csproj", "{BAFE45F2-C78C-470F-A58D-E329F05A9E41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Queue", "src\Building Blocks\Queue\Queue.csproj", "{BAFE45F2-C78C-470F-A58D-E329F05A9E41}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EmailSender", "EmailSender", "{C3B9A599-ECD6-4AF2-AA75-5DD1DAF30527}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailSender.UnitTests", "test\Services\EmailSender\EmailSender.UnitTests\EmailSender.UnitTests.csproj", "{7CA4D5ED-0331-41D9-8B1C-80D3A7B0702D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailSender.UnitTests", "test\Services\EmailSender\EmailSender.UnitTests\EmailSender.UnitTests.csproj", "{7CA4D5ED-0331-41D9-8B1C-80D3A7B0702D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authentication", "Authentication", "{5891FF38-D7DC-4FE7-BDAA-9DDD31C27DE2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authentication", "Authentication", "{3A34C59C-CA02-427F-8BE2-A2FBF9FBE699}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication.API", "src\Services\Authentication\Authentication.API\Authentication.API.csproj", "{631A5F48-6C4B-4CFB-BAAC-BE352F5EDD18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +69,10 @@ Global
 		{7CA4D5ED-0331-41D9-8B1C-80D3A7B0702D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CA4D5ED-0331-41D9-8B1C-80D3A7B0702D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CA4D5ED-0331-41D9-8B1C-80D3A7B0702D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{631A5F48-6C4B-4CFB-BAAC-BE352F5EDD18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{631A5F48-6C4B-4CFB-BAAC-BE352F5EDD18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{631A5F48-6C4B-4CFB-BAAC-BE352F5EDD18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{631A5F48-6C4B-4CFB-BAAC-BE352F5EDD18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +92,9 @@ Global
 		{BAFE45F2-C78C-470F-A58D-E329F05A9E41} = {8B908C77-DC38-4C9A-806E-1DB5A0E6FD3D}
 		{C3B9A599-ECD6-4AF2-AA75-5DD1DAF30527} = {316043BF-A13C-498E-BBA1-996E3909B087}
 		{7CA4D5ED-0331-41D9-8B1C-80D3A7B0702D} = {C3B9A599-ECD6-4AF2-AA75-5DD1DAF30527}
+		{5891FF38-D7DC-4FE7-BDAA-9DDD31C27DE2} = {8AA839A5-C3EC-4B6D-96FD-E9BFF7A7F67F}
+		{3A34C59C-CA02-427F-8BE2-A2FBF9FBE699} = {316043BF-A13C-498E-BBA1-996E3909B087}
+		{631A5F48-6C4B-4CFB-BAAC-BE352F5EDD18} = {5891FF38-D7DC-4FE7-BDAA-9DDD31C27DE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F8AAD22-66BC-4279-B345-BEFC7D01FE5E}
