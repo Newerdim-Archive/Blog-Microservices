@@ -1,5 +1,6 @@
 ﻿using EmailSender.API.Consumers;
 using EmailSender.API.Helper;
+using EmailSender.API.Services;
 using GreenPipes;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
@@ -47,6 +48,11 @@ namespace EmailSender.API.Extensions
         public static void AddCustomSettings(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SmtpSettings>(configuration.GetSection("smtp"));
+        }
+
+        public static void AddCustomService(this IServiceCollection services)
+        {
+            services.AddTransient<IEmailSenderService, EmailSenderService>();
         }
     }
 }
