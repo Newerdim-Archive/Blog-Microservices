@@ -35,6 +35,8 @@ namespace Authentication.API
 
             services.AddAutoMapper(typeof(Startup));
 
+            services.AddCustomServices();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication.API", Version = "v1" });

@@ -1,4 +1,6 @@
 ﻿using Authentication.API.Data;
+using Authentication.API.Providers;
+using Authentication.API.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,11 @@ namespace Authentication.API.Extensions
                     .EnableSensitiveDataLogging()
                     .EnableDetailedErrors()
             );
+        }
+
+        public static void AddCustomServices(this IServiceCollection services)
+        {
+            services.AddTransient<IDateProvider, DateProvider>();
         }
     }
 }
