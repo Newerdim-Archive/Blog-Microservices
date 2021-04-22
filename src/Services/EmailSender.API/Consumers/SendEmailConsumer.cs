@@ -1,24 +1,25 @@
 ﻿using EmailSender.API.Services;
+using EventBus.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
-namespace EmailSender.API.Consumers
+namespace EventBus.Messages
 {
-    public class EmailMessageConsumer : IConsumer<EmailMessage>
+    public class SendEmailConsumer : IConsumer<SendEmailEvent>
     {
         private readonly IEmailSenderService _emailSender;
-        private readonly ILogger<EmailMessageConsumer> _logger;
+        private readonly ILogger<SendEmailConsumer> _logger;
 
-        public EmailMessageConsumer(IEmailSenderService emailSender, ILogger<EmailMessageConsumer> logger)
+        public SendEmailConsumer(IEmailSenderService emailSender, ILogger<SendEmailConsumer> logger)
         {
             _emailSender = emailSender;
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<EmailMessage> context)
+        public async Task Consume(ConsumeContext<SendEmailEvent> context)
         {
             var data = context.Message;
             
