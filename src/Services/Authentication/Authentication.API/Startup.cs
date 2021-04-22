@@ -33,6 +33,8 @@ namespace Authentication.API
             services.AddControllers()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication.API", Version = "v1" });
