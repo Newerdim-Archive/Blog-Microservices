@@ -29,6 +29,7 @@ namespace Authentication.API.Extensions
         public static void AddCustomServices(this IServiceCollection services)
         {
             services.AddTransient<IDateProvider, DateProvider>();
+            services.AddTransient<IAuthService, AuthService>();
         }
     }
 }
