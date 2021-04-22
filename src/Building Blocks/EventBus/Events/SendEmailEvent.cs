@@ -1,6 +1,6 @@
-﻿namespace EmailSender.API.Consumers
+﻿namespace EventBus.Events
 {
-    public class EmailMessage
+    public class SendEmailEvent
     {
         public string From { get; set; }
 

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Queue.ConstNames
+namespace EventBus.QueuesName
 {
     public static class EmailSenderQueue
     {
-        public const string SendEmail = "emailSendQueue";
+        public const string SendEmail = "SendEmailQueue";
     }
 }
