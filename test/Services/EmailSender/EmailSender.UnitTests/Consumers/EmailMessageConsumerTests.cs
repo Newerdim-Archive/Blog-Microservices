@@ -1,5 +1,6 @@
-using EmailSender.API.Consumers;
 using EmailSender.API.Services;
+using EventBus.Events;
+using EventBus.Messages;
 using FluentAssertions;
 using MassTransit.Testing;
 using Microsoft.Extensions.Logging;
@@ -13,24 +14,24 @@ namespace EmailSender.UnitTests
     public class EmailMessageConsumerTests
     {
         private readonly Mock<IEmailSenderService> _emailSenderServiceMock = new();
-        private readonly ILogger<EmailMessageConsumer> _logger;
+        private readonly ILogger<SendEmailConsumer> _logger;
 
         public EmailMessageConsumerTests()
         {
-            var loggerMock = new Mock<ILogger<EmailMessageConsumer>>();
+            var loggerMock = new Mock<ILogger<SendEmailConsumer>>();
             _logger = loggerMock.Object;
         }
 
-        private ConsumerTestHarness<EmailMessageConsumer> GetConsumer(InMemoryTestHarness harness)
+        private ConsumerTestHarness<SendEmailConsumer> GetConsumer(InMemoryTestHarness harness)
         {
             return harness.Consumer(
-                () => new EmailMessageConsumer(_emailSenderServiceMock.Object, _logger));
+                () => new SendEmailConsumer(_emailSenderServiceMock.Object, _logger));
         }
 
         [Fact]
         public async Task Consume_ValidData_NoExpections()
         {
-            var message = new EmailMessage
+            var message = new SendEmailEvent
             {
                 From = "me@test.com",
                 To = new string[] { "test@test.com", "test1@test.com" },
@@ -45,8 +46,8 @@ namespace EmailSender.UnitTests
             {
                 await harness.InputQueueSendEndpoint.Send(message);
 
-                await harness.Consumed.Any<EmailMessage>();
-                var act = await consumerHarness.Consumed.Any<EmailMessage>();
+                await harness.Consumed.Any<SendEmailEvent>();
+                var act = await consumerHarness.Consumed.Any<SendEmailEvent>();
 
                 act.Should().BeTrue();
             }
@@ -68,7 +69,7 @@ namespace EmailSender.UnitTests
         [InlineData("test@gmail.com", null)]
         public async Task Consume_InvalidFromAddress_NotSendEmail(string from, string[] to)
         {
-            var message = new EmailMessage
+            var message = new SendEmailEvent
             {
                 From = from,
                 To = to,
@@ -83,8 +84,8 @@ namespace EmailSender.UnitTests
             {
                 await harness.InputQueueSendEndpoint.Send(message);
 
-                await harness.Consumed.Any<EmailMessage>();
-                var act = await consumerHarness.Consumed.Any<EmailMessage>();
+                await harness.Consumed.Any<SendEmailEvent>();
+                var act = await consumerHarness.Consumed.Any<SendEmailEvent>();
 
                 act.Should().BeTrue();
             }

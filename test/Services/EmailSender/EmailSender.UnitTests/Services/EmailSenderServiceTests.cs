@@ -34,23 +34,23 @@ namespace EmailSender.UnitTests.Services
         public async Task SendAsync_ValidData_NoExceptions()
         {
             var service = new EmailSenderService(_mockOptions.Object);
-            var message = new MailMessage("test@test.com", "newerdim@onet.pl");
+            var message = new MailMessage("test@test.com", "test2@test.com");
 
             Func<Task> act = async () => await service.SendAsync(message);
             await act.Should().NotThrowAsync();
         }
 
         [Fact]
-        public async Task SendAsync_NullMessage_SmtpException()
+        public async Task SendAsync_NullMessage_ThrowsArgumentNullException()
         {
             var service = new EmailSenderService(_mockOptions.Object);
 
             Func<Task> act = async () => await service.SendAsync(null);
-            await act.Should().ThrowAsync<SmtpException>();
+            await act.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Fact]
-        public async Task SendAsync_EmptyMessage_SmtpException()
+        public async Task SendAsync_EmptyMessage_ThrowsSmtpException()
         {
             var service = new EmailSenderService(_mockOptions.Object);
 

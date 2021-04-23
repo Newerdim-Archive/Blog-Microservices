@@ -1,14 +1,11 @@
-﻿using EmailSender.API.Consumers;
-using EmailSender.API.Helper;
+﻿using EmailSender.API.Helper;
+using EmailSender.API.Services;
+using EventBus.Messages;
+using EventBus.QueuesName;
 using GreenPipes;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Queue.ConstNames;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EmailSender.API.Extensions
 {
@@ -21,7 +18,7 @@ namespace EmailSender.API.Extensions
             
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<EmailMessageConsumer>();
+                x.AddConsumer<SendEmailConsumer>();
                 x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(config =>
                 {
                     config.UseHealthCheck(provider);
@@ -34,12 +31,12 @@ namespace EmailSender.API.Extensions
                     {
                         ep.PrefetchCount = 16;
                         ep.UseMessageRetry(r => r.Interval(2, 100));
-                        ep.ConfigureConsumer<EmailMessageConsumer>(provider);
+                        ep.ConfigureConsumer<SendEmailConsumer>(provider);
                     });
                 }));
             });
 
-            services.AddScoped<EmailMessageConsumer>();
+            services.AddScoped<SendEmailConsumer>();
 
             services.AddMassTransitHostedService();
         }
@@ -47,6 +44,11 @@ namespace EmailSender.API.Extensions
         public static void AddCustomSettings(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SmtpSettings>(configuration.GetSection("smtp"));
+        }
+
+        public static void AddCustomService(this IServiceCollection services)
+        {
+            services.AddTransient<IEmailSenderService, EmailSenderService>();
         }
     }
 }
