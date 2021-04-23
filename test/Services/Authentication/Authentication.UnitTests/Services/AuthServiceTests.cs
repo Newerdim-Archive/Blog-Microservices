@@ -56,7 +56,7 @@ namespace Authentication.UnitTests.Services
 
             // Assert
             response.UserId.Should().BeGreaterThan(0);
-            response.Result.Should().Be(RegisterResultMessage.Successful);
+            response.Message.Should().Be(RegisterResultMessage.Successful);
         }
 
         [Theory, AutoData]
@@ -212,7 +212,7 @@ namespace Authentication.UnitTests.Services
 
             // Assert
             response.UserId.Should().Be(0);
-            response.Result.Should().Be(RegisterResultMessage.UsernameAlreadyExists);
+            response.Message.Should().Be(RegisterResultMessage.UsernameAlreadyExists);
         }
 
         [Theory]
@@ -234,7 +234,7 @@ namespace Authentication.UnitTests.Services
 
             // Assert
             response.UserId.Should().Be(0);
-            response.Result.Should().Be(RegisterResultMessage.EmailAlreadyExists);
+            response.Message.Should().Be(RegisterResultMessage.EmailAlreadyExists);
         }
 
         #endregion
