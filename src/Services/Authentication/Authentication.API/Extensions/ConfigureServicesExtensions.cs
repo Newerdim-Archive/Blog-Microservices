@@ -1,7 +1,10 @@
 ﻿using Authentication.API.Data;
+using Authentication.API.Models;
 using Authentication.API.Providers;
 using Authentication.API.Services;
+using Authentication.API.Validators;
 using EmailSender.API.Helper;
+using FluentValidation;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

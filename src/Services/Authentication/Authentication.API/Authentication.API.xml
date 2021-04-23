@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Authentication.API</name>
+    </assembly>
+    <members>
+        <member name="M:Authentication.API.Controllers.AuthController.Register(Authentication.API.Models.RegisterModel)">
+            <summary>
+            Register new user
+            </summary>
+            <param name="model"></param>
+            <returns>The id of newly created user with message</returns>
+            <response code="200">Returns the id of newly created user with message</response>
+            <response code="400">If model is invalid</response>    
+            <response code="401">If user with the same credentials exists</response> 
+        </member>
+        <member name="P:Authentication.API.Models.RegisterModel.Username">
+            <summary>
+            Username
+            <para>Minimum length is 3</para>
+            <example>User123</example>
+            </summary>
+        </member>
+        <member name="P:Authentication.API.Models.RegisterModel.Email">
+            <summary>
+            Adress email
+            <example>User123@gmail.com</example>
+            </summary>
+        </member>
+        <member name="P:Authentication.API.Models.RegisterModel.Password">
+            <summary>
+            Password
+            <para>Must contains one lower and one uppercase letter and one number</para>
+            <para>Minimum length is 6</para>
+            <example>User123@gmail.com</example>
+            </summary>
+        </member>
+        <member name="M:Authentication.API.Services.IAuthService.RegisterAsync(Authentication.API.Dtos.RegisterRequest)">
+            <summary>
+            Register new valid user
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException">Throws when request properity is empty</exception>
+            <exception cref="T:System.ArgumentNullException">Throws when request is null</exception>
+        </member>
+    </members>
+</doc>
