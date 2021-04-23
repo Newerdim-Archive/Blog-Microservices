@@ -42,7 +42,7 @@ namespace Authentication.API.Services
             {
                 return new RegisterResult
                 {
-                    Result = RegisterResultMessage.EmailAlreadyExists,
+                    Message = RegisterResultMessage.EmailAlreadyExists,
                     UserId = 0
                 };
             }
@@ -54,7 +54,7 @@ namespace Authentication.API.Services
             {
                 return new RegisterResult
                 {
-                    Result = RegisterResultMessage.UsernameAlreadyExists,
+                    Message = RegisterResultMessage.UsernameAlreadyExists,
                     UserId = 0
                 };
             }
@@ -66,7 +66,7 @@ namespace Authentication.API.Services
 
             return new RegisterResult
             {
-                Result = RegisterResultMessage.Successful,
+                Message = RegisterResultMessage.Successful,
                 UserId = userToAdd.Id
             };
         }

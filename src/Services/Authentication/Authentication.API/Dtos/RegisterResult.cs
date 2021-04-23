@@ -8,7 +8,7 @@ namespace Authentication.API.Dtos
 {
     public class RegisterResult
     {
-        public RegisterResultMessage Result { get; set; }
+        public RegisterResultMessage Message { get; set; }
         public int UserId { get; set; }
     }
 }
