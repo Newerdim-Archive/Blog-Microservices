@@ -38,6 +38,8 @@ namespace Authentication.API
 
             services.AddAutoMapper(typeof(Startup));
 
+            services.AddCustomSettings(Configuration);
+
             services.AddCustomServices();
 
             services.AddCustomMassTransit(Configuration.GetSection("RabbitMqSettings"));

@@ -1,4 +1,5 @@
 ﻿using Authentication.API.Data;
+using Authentication.API.Helpers;
 using Authentication.API.Models;
 using Authentication.API.Providers;
 using Authentication.API.Services;
@@ -56,6 +57,11 @@ namespace Authentication.API.Extensions
             });
 
             services.AddMassTransitHostedService();
+        }
+
+        public static void AddCustomSettings(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<TokenSettings>(configuration.GetSection("TokenSettings"));
         }
     }
 }
