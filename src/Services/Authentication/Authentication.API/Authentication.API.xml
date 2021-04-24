@@ -8,6 +8,17 @@
             <summary>
             Register new user
             </summary>
+            <remarks>
+            Sample request:
+            
+                POST /Register
+                {
+                   "username": "User1234"
+                   "email": "User1234@email.com"
+                   "password": "User1234$@"
+                }
+                
+            </remarks>
             <param name="model"></param>
             <returns>The id of newly created user with message</returns>
             <response code="200">Returns the id of newly created user with message</response>
@@ -35,6 +46,34 @@
             <example>User123@gmail.com</example>
             </summary>
         </member>
+        <member name="M:Authentication.API.Providers.IDateProvider.GetUtcNow">
+            <summary>
+            Get UTC now date
+            </summary>
+            <returns>UTC now date</returns>
+        </member>
+        <member name="M:Authentication.API.Providers.IDateProvider.GetAfterUtcNow(System.Int32,System.Int32)">
+            <summary>
+            Get UTC date after specified time
+            </summary>
+            <param name="days">How many days after</param>
+            <param name="minutes">How many minutes after</param>
+            <returns>UTC now with added days and minutes</returns>
+        </member>
+        <member name="M:Authentication.API.Publishers.IEmailPublisher.PublishEmailConfirmation(Authentication.API.Dtos.PublishEmailConfirmationRequest)">
+            <summary>
+            Publish email confirmation
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Authentication.API.Publishers.IUserPublisher.PublishNewUser(Authentication.API.Dtos.PublishNewUserRequest)">
+            <summary>
+            Publish newly created user
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
         <member name="M:Authentication.API.Services.IAuthService.RegisterAsync(Authentication.API.Dtos.RegisterRequest)">
             <summary>
             Register new valid user
@@ -43,6 +82,29 @@
             <returns></returns>
             <exception cref="T:System.ArgumentException">Throws when request properity is empty</exception>
             <exception cref="T:System.ArgumentNullException">Throws when request is null</exception>
+        </member>
+        <member name="M:Authentication.API.Services.ITokenService.CreateEmailConfirmationTokenAsync(System.Int32)">
+            <summary>
+            Create token for email confirmation
+            </summary>
+            <param name="userId"></param>
+            <returns>Token</returns>
+            <exception cref="T:System.ArgumentException">Throws when userId is 0 or user with that id not exists</exception>
+        </member>
+        <member name="M:Authentication.API.Services.ITokenService.IsValidEmailConfirmationTokenAsync(System.String)">
+            <summary>
+            Check if token for email confirmation is valid
+            </summary>
+            <param name="token"></param>
+            <returns>True if token is valid otherwise false</returns>
+            <exception cref="T:System.ArgumentException">Throws when token is null or empty</exception>
+        </member>
+        <member name="M:Authentication.API.Services.ITokenService.GetUserIdFromToken(System.String)">
+            <summary>
+            Get user id from token
+            </summary>
+            <param name="token"></param>
+            <returns>User id if exists otherwise 0</returns>
         </member>
     </members>
 </doc>
