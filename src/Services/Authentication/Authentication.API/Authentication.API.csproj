@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>0b791d55-5de7-415a-8a7c-9db85aff8bf2</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..\..</DockerfileContext>
+    <DockerComposeProjectPath>..\..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\newer\source\repos\Blog\src\Services\Authentication\Authentication.API\Authentication.API.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="FluentValidation" Version="10.0.4" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="10.0.4" />
+    <PackageReference Include="MassTransit" Version="7.1.8" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.1.8" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.8" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.13" />
+	  <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="5.0.0-alpha.2" />
+	  <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Building Blocks\EventBus\EventBus.csproj" />
+  </ItemGroup>
+
+</Project>
