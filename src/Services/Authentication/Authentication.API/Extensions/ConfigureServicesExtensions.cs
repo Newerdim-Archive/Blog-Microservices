@@ -36,6 +36,7 @@ namespace Authentication.API.Extensions
         {
             services.AddTransient<IDateProvider, DateProvider>();
             services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<ITokenService, TokenService>();
         }
 
         public static void AddCustomMassTransit(this IServiceCollection services, IConfigurationSection section)
