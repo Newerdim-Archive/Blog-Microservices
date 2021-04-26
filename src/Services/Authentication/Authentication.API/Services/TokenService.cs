@@ -125,18 +125,19 @@ namespace Authentication.API.Services
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = GetValidationParameters(false, _tokenSettings.EmailConfirmationSecret);
 
-            try
-            {
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
-                var userIdClaim = principal.Claims.First(c => c.Type == CustomClaimTypes.UserId);
-                return Convert.ToInt32(userIdClaim.Value);
-            }
-            catch
+            if (!tokenHandler.CanReadToken(token))
             {
                 return 0;
             }
+
+            var claims = tokenHandler.ReadJwtToken(token).Claims;
+
+            var userIdValue = claims.FirstOrDefault(c => c.Type == CustomClaimTypes.UserId)?.Value;
+
+            var result = int.TryParse(userIdValue, out var userId);
+
+            return result ? userId : 0;
         }
     }
 }
