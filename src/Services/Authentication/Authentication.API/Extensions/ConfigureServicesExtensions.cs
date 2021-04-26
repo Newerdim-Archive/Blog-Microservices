@@ -63,6 +63,7 @@ namespace Authentication.API.Extensions
         public static void AddCustomSettings(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<TokenSettings>(configuration.GetSection("TokenSettings"));
+            services.Configure<CompanySettings>(configuration.GetSection("CompanySettings"));
         }
     }
 }
