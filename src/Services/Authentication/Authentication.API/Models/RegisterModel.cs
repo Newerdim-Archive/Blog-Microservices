@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Authentication.API.Models
 {
-    public record RegisterModel
+    public class RegisterModel
     {
         /// <summary>
         /// Username
@@ -14,14 +14,14 @@ namespace Authentication.API.Models
         /// <example>User123</example>
         /// </summary>
         [Required]
-        public string Username { get; init; }
+        public string Username { get; set; }
 
         /// <summary>
         /// Adress email
         /// <example>User123@gmail.com</example>
         /// </summary>
         [Required]
-        public string Email { get; init; }
+        public string Email { get; set; }
 
         /// <summary>
         /// Password
@@ -30,6 +30,15 @@ namespace Authentication.API.Models
         /// <example>User123@gmail.com</example>
         /// </summary>
         [Required]
-        public string Password { get; init; }
+        public string Password { get; set; }
+
+        /// <summary>
+        /// Url where user should be redirected when click email confirmation link
+        /// <para>Example will redirect to www.mysite.com/emailConfirmation/{token}</para>
+        /// <para>Note: Do not put slash at the end</para>
+        /// <example>www.mysite.com/emailConfirmation</example>
+        /// </summary>
+        [Required]
+        public string EmailConfirmationUrl { get; set; }
     }
 }
