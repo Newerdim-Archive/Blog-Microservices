@@ -2,6 +2,7 @@
 using Authentication.API.Enums;
 using Authentication.API.Helpers;
 using Authentication.API.Models;
+using Authentication.API.Publishers;
 using Authentication.API.Responses;
 using Authentication.API.Services;
 using EventBus.Events;
@@ -19,13 +20,22 @@ namespace Authentication.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IPublishEndpoint _publishEndpoint;
+        private readonly ITokenService _tokenService;
+        private readonly IUserPublisher _userPublisher;
+        private readonly IEmailPublisher _emailPublisher;
         private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService, IPublishEndpoint publishEndpoint, ILogger<AuthController> logger)
+        public AuthController(
+            IAuthService authService,
+            ITokenService tokenService,
+            IUserPublisher userPublisher, 
+            IEmailPublisher emailPublisher,
+            ILogger<AuthController> logger)
         {
             _authService = authService;
-            _publishEndpoint = publishEndpoint;
+            _tokenService = tokenService;
+            _userPublisher = userPublisher;
+            _emailPublisher = emailPublisher;
             _logger = logger;
         }
 
@@ -55,16 +65,14 @@ namespace Authentication.API.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            var request = new RegisterRequest
+            var registerResult = await _authService.RegisterAsync(new RegisterRequest
             {
                 Username = model.Username,
                 Email = model.Email,
                 Password = model.Password
-            };
+            });
 
-            var result = await _authService.RegisterAsync(request);
-
-            switch (result.Message)
+            switch (registerResult.Message)
             {
                 case RegisterResultMessage.EmailAlreadyExists:
                     return Unauthorized("User with this email already exists");
@@ -73,27 +81,27 @@ namespace Authentication.API.Controllers
                     return Unauthorized("User with this username already exists");
             }
 
-            await PublishNewUserEvent(result.UserId, request.Username, request.Email);
+            var emailConfiramtionToken = await _tokenService
+                .CreateEmailConfirmationTokenAsync(registerResult.UserId);
 
-            var response = new RegisterResponse
+            await _emailPublisher.PublishEmailConfirmation(new PublishEmailConfirmationRequest
+            {
+                TargetEmail = model.Email,
+                Token = emailConfiramtionToken
+            });
+
+            await _userPublisher.PublishNewUser(new PublishNewUserRequest
+            {
+                UserId = registerResult.UserId,
+                Username = model.Username,
+                Email = model.Email
+            });
+
+            return Ok(new RegisterResponse
             {
                 Message = "Register successful",
-                UserId = result.UserId
-            };
-
-            return Ok(response);
-        }
-
-        private async Task PublishNewUserEvent(int userId, string username, string email)
-        {
-            var newUserEvent = new NewUserEvent
-            {
-                UserId = userId,
-                Username = username,
-                Email = email
-            };
-
-            await _publishEndpoint.Publish(newUserEvent);
+                UserId = registerResult.UserId
+            });
         }
     }
 }

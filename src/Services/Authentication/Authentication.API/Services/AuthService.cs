@@ -32,7 +32,7 @@ namespace Authentication.API.Services
 
             if (!result.IsValid)
             {
-                throw new ArgumentException(string.Concat(result.Errors));
+                throw new ArgumentException($"{typeof(RegisterRequest)} is invalid. Errors: {string.Concat(result.Errors)}");
             }
 
             var isUserWithSameEmailInDb = _context.Users
