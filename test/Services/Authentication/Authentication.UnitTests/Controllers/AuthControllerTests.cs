@@ -2,6 +2,7 @@
 using Authentication.API.Dtos;
 using Authentication.API.Enums;
 using Authentication.API.Models;
+using Authentication.API.Publishers;
 using Authentication.API.Responses;
 using Authentication.API.Services;
 using AutoFixture;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System;
 using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,15 +25,24 @@ namespace Authentication.UnitTests.Controllers
     public class AuthControllerTests
     {
         private readonly Mock<IAuthService> _authServiceMock = new();
-        private readonly Mock<IPublishEndpoint> _publishEndpointMock = new();
+        private readonly Mock<ITokenService> _tokenServiceMock = new();
+        private readonly Mock<IUserPublisher> _userPublisherMock = new();
+        private readonly Mock<IEmailPublisher> _emailPublisherMock = new();
         private readonly Mock<ILogger<AuthController>> _loggerMock = new();
 
         public AuthControllerTests() { }
 
         private AuthController CreateService()
         {
-            return new AuthController(_authServiceMock.Object, _publishEndpointMock.Object, _loggerMock.Object);
+            return new AuthController(
+                _authServiceMock.Object, 
+                _tokenServiceMock.Object,
+                _userPublisherMock.Object,
+                _emailPublisherMock.Object, 
+                _loggerMock.Object);
         }
+
+        #region Register
 
         [Fact]
         public async Task Register_ValidModel_ReturnsUserIdAndMessage()
@@ -42,10 +53,10 @@ namespace Authentication.UnitTests.Controllers
 
             _authServiceMock.Setup(x => x
                 .RegisterAsync(It.IsAny<RegisterRequest>()))
-                    .ReturnsAsync(new RegisterResult 
-                    { 
-                        Message = RegisterResultMessage.Successful, 
-                        UserId = 1 
+                    .ReturnsAsync(new RegisterResult
+                    {
+                        Message = RegisterResultMessage.Successful,
+                        UserId = 1
                     });
 
             var sut = CreateService();
@@ -82,13 +93,47 @@ namespace Authentication.UnitTests.Controllers
             var value = response.Value as RegisterResponse;
 
             // Assert
-            _publishEndpointMock.Verify(x => x
-                .Publish(
-                    It.Is<NewUserEvent>(x => 
+            _userPublisherMock.Verify(x => x
+                .PublishNewUser(
+                    It.Is<PublishNewUserRequest>(x =>
                         x.UserId == 1 &&
                         x.Username == model.Username &&
-                        x.Email == model.Email), 
-                    It.IsAny<CancellationToken>()), Times.Once);
+                        x.Email == model.Email)));
+        }
+
+        [Fact]
+        public async Task Register_ValidModel_PublishSendEmailEvent()
+        {
+            // Arrange
+            var token = "validToken";
+
+            var fixture = new Fixture();
+            var model = fixture.Create<RegisterModel>();
+
+            _authServiceMock.Setup(x => x
+                .RegisterAsync(It.IsAny<RegisterRequest>()))
+                    .ReturnsAsync(new RegisterResult
+                    {
+                        Message = RegisterResultMessage.Successful,
+                        UserId = 1
+                    });
+
+            _tokenServiceMock.Setup(x => x
+                .CreateEmailConfirmationTokenAsync(It.IsAny<int>()))
+                    .ReturnsAsync(token);
+
+            var sut = CreateService();
+
+            // Act
+            var response = await sut.Register(model) as OkObjectResult;
+            var value = response.Value as RegisterResponse;
+
+            // Assert
+            _emailPublisherMock.Verify(x => x
+                .PublishEmailConfirmation(
+                    It.Is<PublishEmailConfirmationRequest>(x =>
+                        x.Token == token &&
+                        x.TargetEmail == model.Email)));
         }
 
         [Fact]
@@ -140,5 +185,8 @@ namespace Authentication.UnitTests.Controllers
             response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
             response.Value.Should().NotBeNull();
         }
+
+        #endregion
+
     }
 }
