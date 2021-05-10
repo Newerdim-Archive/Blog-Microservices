@@ -14,12 +14,12 @@ namespace Authentication.API.Publishers
 {
     public class EmailPublisher : IEmailPublisher
     {
-        private readonly IPublishEndpoint _publish;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly CompanySettings _companySettings;
 
-        public EmailPublisher(IPublishEndpoint publish, IOptions<CompanySettings> companySettingsOptions)
+        public EmailPublisher(IPublishEndpoint publishEndpoint, IOptions<CompanySettings> companySettingsOptions)
         {
-            _publish = publish;
+            _publishEndpoint = publishEndpoint;
             _companySettings = companySettingsOptions.Value;
         }
 
@@ -46,7 +46,7 @@ namespace Authentication.API.Publishers
                 From = _companySettings.Email
             };
 
-            await _publish.Publish(sendEmailEvent, CancellationToken.None);
+            await _publishEndpoint.Publish(sendEmailEvent);
         }
     }
 }
