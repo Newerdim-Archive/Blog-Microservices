@@ -46,6 +46,14 @@
             <example>User123@gmail.com</example>
             </summary>
         </member>
+        <member name="P:Authentication.API.Models.RegisterModel.EmailConfirmationUrl">
+            <summary>
+            Url where user should be redirected when click email confirmation link
+            <para>Example will redirect to www.mysite.com/emailConfirmation/{token}</para>
+            <para>Note: Do not put slash at the end</para>
+            <example>www.mysite.com/emailConfirmation</example>
+            </summary>
+        </member>
         <member name="M:Authentication.API.Providers.IDateProvider.GetUtcNow">
             <summary>
             Get UTC now date
@@ -61,7 +69,7 @@
             <returns>UTC now with added days and minutes</returns>
             <exception cref="T:System.ArgumentOutOfRangeException">Throws when number of days is too big</exception>
         </member>
-        <member name="M:Authentication.API.Publishers.IEmailPublisher.PublishEmailConfirmation(Authentication.API.Dtos.PublishEmailConfirmationRequest)">
+        <member name="M:Authentication.API.Publishers.IEmailPublisher.PublishEmailConfirmationAsync(Authentication.API.Dtos.PublishEmailConfirmationRequest)">
             <summary>
             Publish email confirmation
             </summary>

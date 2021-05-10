@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Authentication.API.Publishers
@@ -22,7 +23,7 @@ namespace Authentication.API.Publishers
             _companySettings = companySettingsOptions.Value;
         }
 
-        public async Task PublishEmailConfirmation(PublishEmailConfirmationRequest request)
+        public async Task PublishEmailConfirmationAsync(PublishEmailConfirmationRequest request)
         {
             var validator = new PublishEmailConfirmationRequestValidator();
             var result = await validator.ValidateAsync(request);
@@ -45,7 +46,7 @@ namespace Authentication.API.Publishers
                 From = _companySettings.Email
             };
 
-            await _publish.Publish(sendEmailEvent);
+            await _publish.Publish(sendEmailEvent, CancellationToken.None);
         }
     }
 }

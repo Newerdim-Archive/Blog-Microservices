@@ -10,6 +10,6 @@ namespace Authentication.API.Publishers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task PublishEmailConfirmation(PublishEmailConfirmationRequest request);
+        Task PublishEmailConfirmationAsync(PublishEmailConfirmationRequest request);
     }
 }

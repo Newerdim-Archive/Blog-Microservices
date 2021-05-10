@@ -130,7 +130,7 @@ namespace Authentication.UnitTests.Controllers
 
             // Assert
             _emailPublisherMock.Verify(x => x
-                .PublishEmailConfirmation(
+                .PublishEmailConfirmationAsync(
                     It.Is<PublishEmailConfirmationRequest>(x =>
                         x.Token == token &&
                         x.TargetEmail == model.Email)));
