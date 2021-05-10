@@ -2,6 +2,7 @@
 using Authentication.API.Helpers;
 using Authentication.API.Models;
 using Authentication.API.Providers;
+using Authentication.API.Publishers;
 using Authentication.API.Services;
 using Authentication.API.Validators;
 using EmailSender.API.Helper;
@@ -37,6 +38,9 @@ namespace Authentication.API.Extensions
             services.AddTransient<IDateProvider, DateProvider>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<ITokenService, TokenService>();
+
+            services.AddTransient<IEmailPublisher, EmailPublisher>();
+            services.AddTransient<IUserPublisher, UserPublisher>();
         }
 
         public static void AddCustomMassTransit(this IServiceCollection services, IConfigurationSection section)
