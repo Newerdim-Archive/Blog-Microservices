@@ -37,29 +37,6 @@ namespace Authentication.UnitTests.Publishers
                 _companySettingsOptionsMock.Object);
         }
 
-
-        [Fact]
-        public async Task PublishEmailConfirmationAsync_ValidRequest_PublishEvent()
-        {
-            // Arrange
-            var request = new PublishEmailConfirmationRequest
-            {
-                TargetEmail = "target@mail.com",
-                Token = "secretToken",
-                ReturnUrl = "www.website.com/email-confrimation"
-            };
-
-            var sut = CreatePublisher();
-
-            // Act
-            await sut.PublishEmailConfirmationAsync(request);
-
-            // Assert
-            _publishEndpointMock.Verify(x => x
-                .Publish(It.IsAny<SendEmailEvent>(), It.IsAny<CancellationToken>()), 
-                    Times.Once);
-        }
-
         [Fact]
         public async Task PublishEmailConfirmationAsync_ValidRequest_PublishValidEmail()
         {
