@@ -10,6 +10,6 @@ namespace Authentication.API.Publishers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task PublishNewUser(PublishNewUserRequest request);
+        Task PublishNewUserAsync(PublishNewUserRequest request);
     }
 }

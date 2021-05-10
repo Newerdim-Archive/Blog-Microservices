@@ -94,7 +94,7 @@ namespace Authentication.UnitTests.Controllers
 
             // Assert
             _userPublisherMock.Verify(x => x
-                .PublishNewUser(
+                .PublishNewUserAsync(
                     It.Is<PublishNewUserRequest>(x =>
                         x.UserId == 1 &&
                         x.Username == model.Username &&

@@ -90,7 +90,7 @@ namespace Authentication.API.Controllers
                 Token = emailConfiramtionToken
             });
 
-            await _userPublisher.PublishNewUser(new PublishNewUserRequest
+            await _userPublisher.PublishNewUserAsync(new PublishNewUserRequest
             {
                 UserId = registerResult.UserId,
                 Username = model.Username,

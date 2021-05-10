@@ -76,7 +76,7 @@
             <param name="request"></param>
             <returns></returns>
         </member>
-        <member name="M:Authentication.API.Publishers.IUserPublisher.PublishNewUser(Authentication.API.Dtos.PublishNewUserRequest)">
+        <member name="M:Authentication.API.Publishers.IUserPublisher.PublishNewUserAsync(Authentication.API.Dtos.PublishNewUserRequest)">
             <summary>
             Publish newly created user
             </summary>
