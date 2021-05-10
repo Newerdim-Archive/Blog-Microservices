@@ -1,6 +1,6 @@
-﻿namespace EventBus.Events
+﻿namespace EventBus.Messages
 {
-    public class NewUserEvent
+    public class NewUserMessage
     {
         public int UserId { get; set; }
         public string Username { get; set; }
