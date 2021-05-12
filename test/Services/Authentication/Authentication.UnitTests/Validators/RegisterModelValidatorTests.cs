@@ -1,44 +1,33 @@
 ﻿using Authentication.API.Models;
 using Authentication.API.Validators;
-using AutoFixture;
-using AutoFixture.Kernel;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
+using FluentValidation.TestHelper;
 using System.Linq;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Authentication.UnitTests.Validators
 {
     public class RegisterModelValidatorTests
     {
-        private static RegisterModel CreateValidModel()
+        private readonly RegisterModelValidator _validator = new();
+
+        [Fact]
+        public void ValidateAll_ValidModel_ReturnsTrue()
         {
-            return new RegisterModel
+            // Arrange
+            var validModel = new RegisterModel
             {
                 Username = "User1234",
                 Email = "User1234@mail.com",
                 Password = "Password123!",
                 EmailConfirmationUrl = "http://www.website.com"
             };
-        }
-
-        [Fact]
-        public void ValidateAll_ValidModel_ReturnsTrue()
-        {
-            // Arrange
-            var validModel = CreateValidModel();
-            var sut = new RegisterModelValidator();
 
             // Act
-            var result = sut.Validate(validModel);
+            var result = _validator.TestValidate(validModel);
 
             // Assert
-            result.IsValid.Should().BeTrue();
-            result.Errors.Should().BeEmpty();
+            result.ShouldNotHaveAnyValidationErrors();
         }
 
         #region ValidateUsername
@@ -50,76 +39,53 @@ namespace Authentication.UnitTests.Validators
         public void ValidateUsername_NullOrEmpty_ReturnsFalseWithError(string username)
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Username = username;
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Username = username };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
             result.IsValid.Should().BeFalse();
-
-            var isAnyUsernameError = result.Errors.Any(e => e.PropertyName == nameof(model.Username));
-            isAnyUsernameError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Username);
         }
 
         [Fact]
         public void ValidateUsername_TooLong_ReturnsFalseWithError()
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Username = new string('a', 33);
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Username = new string('a', 33) };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyUsernameError = result.Errors.Any(e => e.PropertyName == nameof(model.Username));
-            isAnyUsernameError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Username);
         }
 
         [Fact]
         public void ValidateUsername_TooShort_ReturnsFalseWithError()
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Username = new string('a', 2);
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Username = new string('a', 2) };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyUsernameError = result.Errors.Any(e => e.PropertyName == nameof(model.Username));
-            isAnyUsernameError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Username);
         }
 
         [Fact]
         public void ValidateUsername_InvalidSpecialCharacters_ReturnsFalseWithError()
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Username = "Invalid !@#?";
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Username = "@@#!$%%%!@" };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyUsernameError = result.Errors.Any(e => e.PropertyName == nameof(model.Username));
-            isAnyUsernameError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Username);
         }
 
         #endregion
@@ -133,19 +99,13 @@ namespace Authentication.UnitTests.Validators
         public void ValidateEmail_NullOrEmpty_ReturnsFalseWithMessage(string email)
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Email = email;
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Email = email };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyEmailError = result.Errors.Any(e => e.PropertyName == nameof(model.Email));
-            isAnyEmailError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Email);
         }
 
         [Theory]
@@ -155,19 +115,13 @@ namespace Authentication.UnitTests.Validators
         public void ValidateEmail_InvalidEmail_ReturnsFalseWithMessage(string email)
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Email = email;
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Email = email };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyEmailError = result.Errors.Any(e => e.PropertyName == nameof(model.Email));
-            isAnyEmailError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Email);
         }
 
         #endregion
@@ -181,95 +135,65 @@ namespace Authentication.UnitTests.Validators
         public void ValidatePassword_NullOrEmpty_ReturnsFalseWithMessage(string password)
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Password = password;
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Password = password };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyPasswordError = result.Errors.Any(e => e.PropertyName == nameof(model.Password));
-            isAnyPasswordError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Password);
         }
 
         [Fact]
         public void ValidatePassword_TooShort_ReturnsFalseWithMessage()
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Password = "Aa1!z";
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Password = "Aa1!z" };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyPasswordError = result.Errors.Any(e => e.PropertyName == nameof(model.Password));
-            isAnyPasswordError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Password);
         }
 
         [Fact]
         public void ValidatePassword_WithoutUppercase_ReturnsFalseWithMessage()
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Password = "aaaaaaa1111";
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Password = "aaaaaaa1111" };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyPasswordError = result.Errors.Any(e => e.PropertyName == nameof(model.Password));
-            isAnyPasswordError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Password);
         }
 
         [Fact]
         public void ValidatePassword_WithoutLowercase_ReturnsFalseWithMessage()
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Password = "AAAAAAA1111";
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Password = "AAAAAAA1111" };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyPasswordError = result.Errors.Any(e => e.PropertyName == nameof(model.Password));
-            isAnyPasswordError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Password);
         }
 
         [Fact]
         public void ValidatePassword_WithoutNumber_ReturnsFalseWithMessage()
         {
             // Arrange
-            var model = CreateValidModel();
-            model.Password = "AAAAAAAaaaaa";
-
-            var sut = new RegisterModelValidator();
+            var model = new RegisterModel { Password = "AAAAAAAaaaaa" };
 
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyPasswordError = result.Errors.Any(e => e.PropertyName == nameof(model.Password));
-            isAnyPasswordError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.Password);
         }
 
         #endregion
@@ -281,21 +205,14 @@ namespace Authentication.UnitTests.Validators
         public void ValidateEmailConfirmationUrl_NullOrEmpty_ReturnsFalseWithMessage(string emailConfirmationUrl)
         {
             // Arrange
-            var model = CreateValidModel();
+            var model = new RegisterModel { EmailConfirmationUrl = emailConfirmationUrl };
             model.EmailConfirmationUrl = emailConfirmationUrl;
 
-            var sut = new RegisterModelValidator();
-
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyEmailConfirmationError = result.Errors
-                .Any(e => e.PropertyName == nameof(model.EmailConfirmationUrl));
-
-            isAnyEmailConfirmationError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.EmailConfirmationUrl);
         }
 
         [Theory]
@@ -304,21 +221,14 @@ namespace Authentication.UnitTests.Validators
         public void ValidateEmailConfirmationUrl_Invalid_ReturnsFalseWithMessage(string emailConfirmationUrl)
         {
             // Arrange
-            var model = CreateValidModel();
+            var model = new RegisterModel { EmailConfirmationUrl = emailConfirmationUrl };
             model.EmailConfirmationUrl = emailConfirmationUrl;
 
-            var sut = new RegisterModelValidator();
-
             // Act
-            var result = sut.Validate(model);
+            var result = _validator.TestValidate(model);
 
             // Assert
-            result.IsValid.Should().BeFalse();
-
-            var isAnyEmailConfirmationError = result.Errors
-                .Any(e => e.PropertyName == nameof(model.EmailConfirmationUrl));
-
-            isAnyEmailConfirmationError.Should().BeTrue();
+            result.ShouldHaveValidationErrorFor(x => x.EmailConfirmationUrl);
         }
     }
 }
