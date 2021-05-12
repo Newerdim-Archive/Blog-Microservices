@@ -1,4 +1,5 @@
 ﻿using Authentication.API.Dtos;
+using System;
 using System.Threading.Tasks;
 
 namespace Authentication.API.Publishers
@@ -10,6 +11,7 @@ namespace Authentication.API.Publishers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentException">Throws when request is null or has empty fields</exception>
         Task PublishEmailConfirmationAsync(PublishEmailConfirmationRequest request);
     }
 }
