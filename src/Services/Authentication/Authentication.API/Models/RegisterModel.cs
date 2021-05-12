@@ -17,7 +17,7 @@ namespace Authentication.API.Models
         public string Username { get; set; }
 
         /// <summary>
-        /// Adress email
+        /// Address email
         /// <example>User123@gmail.com</example>
         /// </summary>
         [Required]
@@ -25,7 +25,7 @@ namespace Authentication.API.Models
 
         /// <summary>
         /// Password
-        /// <para>Must contains one lower and one uppercase letter and one number</para>
+        /// <para>Must contain a lower and  uppercase letter and a number</para>
         /// <para>Minimum length is 6</para>
         /// <example>User123@gmail.com</example>
         /// </summary>
@@ -33,7 +33,7 @@ namespace Authentication.API.Models
         public string Password { get; set; }
 
         /// <summary>
-        /// Url where user should be redirected when click email confirmation link
+        /// URL where user should be redirected when click email confirmation link
         /// <para>Example will redirect to https://www.mysite.com/emailConfirmation?token={token}</para>
         /// <para>Note: It will put the token at the end</para>
         /// <example>https://www.mysite.com/emailConfirmation?token=</example>
