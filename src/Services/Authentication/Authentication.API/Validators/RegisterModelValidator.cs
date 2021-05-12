@@ -1,4 +1,5 @@
-﻿using Authentication.API.Models;
+﻿using Authentication.API.Extensions;
+using Authentication.API.Models;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,7 @@ namespace Authentication.API.Validators
         {
             RuleFor(x => x.Username)
                 .NotEmpty()
-                .MinimumLength(3)
-                .MaximumLength(32)
-                .Matches(@"^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$")
-                .WithMessage("{PropertyName} can only contains lower and upper case letters, numbers, space, dash and underscore");
+                .Username();
 
             RuleFor(x => x.Email)
                 .NotEmpty()
@@ -24,18 +22,11 @@ namespace Authentication.API.Validators
 
             RuleFor(x => x.Password)
                 .NotEmpty()
-                .MinimumLength(6)
-                .Matches(@"[A-Z]")
-                .WithMessage("{PropertyName} must contains uppercase letter")
-                .Matches(@"[a-z]")
-                .WithMessage("{PropertyName} must contains lowercase letter")
-                .Matches(@"[0-9]")
-                .WithMessage("{PropertyName} must contains number");
+                .Password();
 
             RuleFor(x => x.EmailConfirmationUrl)
                 .NotEmpty()
-                .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
-                .WithMessage("{PropertyName} must be valid URL");
+                .Url();
         }
     }
 }
