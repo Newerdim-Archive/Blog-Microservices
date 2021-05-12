@@ -87,7 +87,8 @@ namespace Authentication.API.Controllers
             await _emailPublisher.PublishEmailConfirmationAsync(new PublishEmailConfirmationRequest
             {
                 TargetEmail = model.Email,
-                Token = emailConfiramtionToken
+                Token = emailConfiramtionToken,
+                EmailConfirmationUrl = model.EmailConfirmationUrl
             });
 
             await _userPublisher.PublishNewUserAsync(new PublishNewUserRequest

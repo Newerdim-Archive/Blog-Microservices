@@ -34,9 +34,9 @@ namespace Authentication.API.Models
 
         /// <summary>
         /// Url where user should be redirected when click email confirmation link
-        /// <para>Example will redirect to www.mysite.com/emailConfirmation/{token}</para>
-        /// <para>Note: Do not put slash at the end</para>
-        /// <example>www.mysite.com/emailConfirmation</example>
+        /// <para>Example will redirect to https://www.mysite.com/emailConfirmation?token={token}</para>
+        /// <para>Note: It will put the token at the end</para>
+        /// <example>https://www.mysite.com/emailConfirmation?token=</example>
         /// </summary>
         [Required]
         public string EmailConfirmationUrl { get; set; }
