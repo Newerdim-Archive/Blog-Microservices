@@ -50,15 +50,7 @@ namespace Authentication.API.Extensions
 
             services.AddMassTransit(x =>
             {
-                x.AddBus(provider => Bus.Factory.CreateUsingRabbitMq(config =>
-                {
-                    config.UseHealthCheck(provider);
-                    config.Host(rabbitMqSettings.Uri, h =>
-                    {
-                        h.Username(rabbitMqSettings.Username);
-                        h.Password(rabbitMqSettings.Password);
-                    });
-                }));
+                x.UsingRabbitMq((context, cfg) => cfg.ConfigureEndpoints(context));
             });
 
             services.AddMassTransitHostedService();
