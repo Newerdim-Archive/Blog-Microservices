@@ -1,44 +1,117 @@
-﻿using AutoFixture;
+﻿using Authentication.API;
+using Authentication.API.Helpers;
+using Authentication.API.Models;
+using Authentication.API.Responses;
+using AutoFixture;
 using AutoFixture.Kernel;
+using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Authentication.IntergrationTests.Controllers
 {
-    class AuthControllerTests
+    public class AuthControllerTests : IClassFixture<AuthWebApplicationFactory<Startup>>
     {
-
-        private static string CreateValidUsername()
+        private readonly HttpClient _client;
+        public AuthControllerTests(AuthWebApplicationFactory<Startup> factory)
         {
-            var fixture = new Fixture();
-
-            var usernamePattern = @"^[A-Za-z0-9]{3}(?:[ _-][A-Za-z0-9]+){6}$";
-            var username = new SpecimenContext(fixture)
-                .Resolve(new RegularExpressionRequest(usernamePattern));
-
-            return username.ToString().Substring(0, 20);
+            _client = factory.CreateClient();
         }
 
-        private static string CreateValidPassword()
+        private static RegisterModel CreateValidRegisterModel()
         {
-            var fixture = new Fixture();
-
-            var passwordPattern = @"^[A-Z]{3}[a-z]{3}[0-9]{3}$";
-            var password = new SpecimenContext(fixture)
-                .Resolve(new RegularExpressionRequest(passwordPattern));
-
-            return password.ToString();
+            return new RegisterModel
+            {
+                Username = "User1234",
+                Email = "User1234@mail.com",
+                Password = "Password123!",
+                EmailConfirmationUrl = "http://www.website.com"
+            };
         }
 
-        private static string CreateValidEmail()
+        [Fact]
+        public async Task Register_ValidModel_ReturnsOkWithUserIdAndMessage()
         {
-            var fixture = new Fixture();
+            // Arrange
+            var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
+            var model = CreateValidRegisterModel();
 
-            return fixture.Create<MailAddress>().Address;
+            // Act
+            var response = await _client.PostAsJsonAsync(route, model);
+
+            var responseContent = await response.Content.ReadFromJsonAsync<RegisterResponse>();
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            responseContent.Message.Should().Contain("successful");
+            responseContent.UserId.Should().BeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task Register_InvalidModel_ReturnsBadRequestWithMessage()
+        {
+            // Arrange
+            var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
+            var model = new RegisterModel
+            {
+                Username = null,
+                Password = null,
+                Email = null,
+                EmailConfirmationUrl = null
+            };
+
+            // Act
+            var response = await _client.PostAsJsonAsync(route, model);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            responseContent.Should().Contain("validation errors occurred.");
+        }
+
+        [Fact]
+        public async Task Register_EmailAlreadyExists_ReturnsUnauthorizedWithMessage()
+        {
+            // Arrange
+            var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
+            var model = CreateValidRegisterModel();
+            model.Email = "User1@mail.com";
+
+            // Act
+            var response = await _client.PostAsJsonAsync(route, model);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responseContent.Should().Contain("email already exists");
+        }
+
+        [Fact]
+        public async Task Register_UsernameAlreadyExists_ReturnsUnauthorizedWithMessage()
+        {
+            // Arrange
+            var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
+            var model = CreateValidRegisterModel();
+            model.Username = "User1";
+
+            // Act
+            var response = await _client.PostAsJsonAsync(route, model);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            responseContent.Should().Contain("username already exists");
         }
     }
 }
