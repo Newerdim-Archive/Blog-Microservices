@@ -43,7 +43,7 @@ namespace Authentication.UnitTests.Publishers
             // Arrange
             var targetEmail = "target@mail.com";
             var token = "secretToken";
-            var returnUrl = "www.website.com/email-confrimation";
+            var emailConfirmationUrl = "www.website.com/email-confrimation";
 
             var sut = CreatePublisher();
 
@@ -52,7 +52,7 @@ namespace Authentication.UnitTests.Publishers
             {
                 TargetEmail = targetEmail,
                 Token = token,
-                ReturnUrl = returnUrl
+                EmailConfirmationUrl = emailConfirmationUrl
             });
 
             // Assert
@@ -75,7 +75,7 @@ namespace Authentication.UnitTests.Publishers
             {
                 TargetEmail = "",
                 Token = "",
-                ReturnUrl = ""
+                EmailConfirmationUrl = ""
             };
 
             var sut = CreatePublisher();

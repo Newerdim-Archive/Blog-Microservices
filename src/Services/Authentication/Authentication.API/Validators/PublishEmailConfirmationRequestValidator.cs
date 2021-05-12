@@ -13,7 +13,7 @@ namespace Authentication.API.Validators
         {
             RuleFor(x => x.TargetEmail).NotEmpty();
             RuleFor(x => x.Token).NotEmpty();
-            RuleFor(x => x.ReturnUrl).NotEmpty();
+            RuleFor(x => x.EmailConfirmationUrl).NotEmpty();
         }
     }
 }

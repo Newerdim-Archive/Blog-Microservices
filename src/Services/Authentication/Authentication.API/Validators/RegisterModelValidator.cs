@@ -31,6 +31,11 @@ namespace Authentication.API.Validators
                 .WithMessage("{PropertyName} must contains lowercase letter")
                 .Matches(@"[0-9]")
                 .WithMessage("{PropertyName} must contains number");
+
+            RuleFor(x => x.EmailConfirmationUrl)
+                .NotEmpty()
+                .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
+                .WithMessage("{PropertyName} must be valid URL");
         }
     }
 }

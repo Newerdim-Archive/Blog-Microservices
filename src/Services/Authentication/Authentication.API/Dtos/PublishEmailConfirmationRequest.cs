@@ -9,6 +9,6 @@ namespace Authentication.API.Dtos
     {
         public string Token { get; init; }
         public string TargetEmail { get; init; }
-        public string ReturnUrl { get; init; }
+        public string EmailConfirmationUrl { get; init; }
     }
 }

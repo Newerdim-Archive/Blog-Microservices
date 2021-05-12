@@ -35,7 +35,7 @@ namespace Authentication.API.Publishers
 
             var message = $@"Hi {request.TargetEmail}, <br><br>
                 We just need to verify your email address before you can access {_companySettings.Name} account <br><br>
-                Verify your email address - <a href=""{request.ReturnUrl}/{request.Token}"">Click here!</a> <br><br>
+                Verify your email address - <a href=""{request.EmailConfirmationUrl}/{request.Token}"">Click here!</a> <br><br>
                 Thanks! – The {_companySettings.Name} team";
 
             var sendEmailEvent = new SendEmailEvent
