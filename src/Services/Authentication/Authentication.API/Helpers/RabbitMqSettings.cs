@@ -15,6 +15,9 @@ namespace EmailSender.API.Helper
 
         public string Password { get; set; }
 
+        /// <summary>
+        /// Contains hostname and port
+        /// </summary>
         public Uri Uri => new ($"{Hostname}:{Port}");
     }
 }
