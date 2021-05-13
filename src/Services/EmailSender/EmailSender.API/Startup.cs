@@ -22,7 +22,7 @@ namespace EmailSender.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCustomService();
-            services.AddCustomMassTransit(Configuration.GetSection("rabbitmq"));
+            services.AddCustomMassTransit(Configuration.GetSection("RabbitMqSettings"));
             services.AddCustomSettings(Configuration);
         }
 

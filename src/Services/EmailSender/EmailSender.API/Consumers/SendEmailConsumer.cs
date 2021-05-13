@@ -1,4 +1,5 @@
 ﻿using EmailSender.API.Services;
+using EventBus.Commands;
 using EventBus.Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EventBus.Messages
 {
-    public class SendEmailConsumer : IConsumer<SendEmailEvent>
+    public class SendEmailConsumer : IConsumer<SendEmailCommand>
     {
         private readonly IEmailSenderService _emailSender;
         private readonly ILogger<SendEmailConsumer> _logger;
@@ -19,7 +20,7 @@ namespace EventBus.Messages
             _logger = logger;
         }
 
-        public async Task Consume(ConsumeContext<SendEmailEvent> context)
+        public async Task Consume(ConsumeContext<SendEmailCommand> context)
         {
             var data = context.Message;
 

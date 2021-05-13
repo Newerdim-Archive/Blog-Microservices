@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\Building Blocks\EventBus\EventBus.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Services\EmailSender.API\EmailSender.API.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Services\EmailSender\EmailSender.API\EmailSender.API.csproj" />
   </ItemGroup>
 
 </Project>
