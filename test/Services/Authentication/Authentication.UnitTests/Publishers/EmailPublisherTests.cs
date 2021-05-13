@@ -33,7 +33,7 @@ namespace Authentication.UnitTests.Publishers
         private IEmailPublisher CreatePublisher()
         {
             return new EmailPublisher(
-                _publishEndpointMock.Object, 
+                _publishEndpointMock.Object,
                 _companySettingsOptionsMock.Object);
         }
 
@@ -56,13 +56,13 @@ namespace Authentication.UnitTests.Publishers
             });
 
             // Assert
-            _publishEndpointMock.Verify(x => 
+            _publishEndpointMock.Verify(x =>
                 x.Publish(
-                    It.Is<SendEmailEvent>(e => 
+                    It.Is<SendEmailEvent>(e =>
                         e.To.Contains(targetEmail) &&
                         e.Subject.Contains("email verification") &&
                         e.Body.Contains(token) &&
-                        e.From.Contains("test@company.com")), 
+                        e.From.Contains("test@company.com")),
                     It.IsAny<CancellationToken>()),
                 Times.Once);
         }

@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Authentication.API.Extensions
 {
@@ -44,6 +41,5 @@ namespace Authentication.API.Extensions
                 .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
                 .WithMessage("{PropertyName} must be valid URL");
         }
-                        
     }
 }

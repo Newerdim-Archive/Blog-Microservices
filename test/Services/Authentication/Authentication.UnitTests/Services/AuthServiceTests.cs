@@ -1,17 +1,14 @@
 ﻿using Authentication.API.Data;
 using Authentication.API.Dtos;
 using Authentication.API.Enums;
-using Authentication.API.Helpers;
 using Authentication.API.Providers;
 using Authentication.API.Services;
 using Authentication.UnitTests.DataFixture;
 using AutoFixture.Xunit2;
-using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography;
@@ -29,7 +26,7 @@ namespace Authentication.UnitTests.Services
         public AuthServiceTests(AuthSeedDataFixture fixture)
         {
             _context = fixture.Context;
-            _dateProviderMock = new ();
+            _dateProviderMock = new();
         }
 
         private IAuthService CreateService()
@@ -237,6 +234,6 @@ namespace Authentication.UnitTests.Services
             response.Message.Should().Be(RegisterResultMessage.EmailAlreadyExists);
         }
 
-        #endregion
+        #endregion Register
     }
 }

@@ -2,17 +2,10 @@
 using Authentication.API.Helpers;
 using Authentication.API.Models;
 using Authentication.API.Responses;
-using AutoFixture;
-using AutoFixture.Kernel;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -21,6 +14,7 @@ namespace Authentication.IntergrationTests.Controllers
     public class AuthControllerTests : IClassFixture<AuthWebApplicationFactory<Startup>>
     {
         private readonly HttpClient _client;
+
         public AuthControllerTests(AuthWebApplicationFactory<Startup> factory)
         {
             _client = factory.CreateClient();

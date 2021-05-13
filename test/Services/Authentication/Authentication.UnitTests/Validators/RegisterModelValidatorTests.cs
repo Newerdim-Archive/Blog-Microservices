@@ -2,7 +2,6 @@
 using Authentication.API.Validators;
 using FluentAssertions;
 using FluentValidation.TestHelper;
-using System.Linq;
 using Xunit;
 
 namespace Authentication.UnitTests.Validators
@@ -88,7 +87,7 @@ namespace Authentication.UnitTests.Validators
             result.ShouldHaveValidationErrorFor(x => x.Username);
         }
 
-        #endregion
+        #endregion ValidateUsername
 
         #region ValidateEmail
 
@@ -124,7 +123,7 @@ namespace Authentication.UnitTests.Validators
             result.ShouldHaveValidationErrorFor(x => x.Email);
         }
 
-        #endregion
+        #endregion ValidateEmail
 
         #region ValidatePassword
 
@@ -196,7 +195,7 @@ namespace Authentication.UnitTests.Validators
             result.ShouldHaveValidationErrorFor(x => x.Password);
         }
 
-        #endregion
+        #endregion ValidatePassword
 
         [Theory]
         [InlineData(null)]

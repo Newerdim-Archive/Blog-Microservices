@@ -8,7 +8,6 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,7 +20,7 @@ namespace Authentication.API.Services
         private readonly TokenSettings _tokenSettings;
 
         public TokenService(
-            AuthDataContext context, 
+            AuthDataContext context,
             IDateProvider dateProvider,
             IOptions<TokenSettings> tokenOptions)
         {

@@ -6,17 +6,11 @@ using Authentication.API.Publishers;
 using Authentication.API.Responses;
 using Authentication.API.Services;
 using AutoFixture;
-using AutoFixture.Kernel;
-using EventBus.Events;
 using FluentAssertions;
-using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Net.Mail;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,15 +24,17 @@ namespace Authentication.UnitTests.Controllers
         private readonly Mock<IEmailPublisher> _emailPublisherMock = new();
         private readonly Mock<ILogger<AuthController>> _loggerMock = new();
 
-        public AuthControllerTests() { }
+        public AuthControllerTests()
+        {
+        }
 
         private AuthController CreateService()
         {
             return new AuthController(
-                _authServiceMock.Object, 
+                _authServiceMock.Object,
                 _tokenServiceMock.Object,
                 _userPublisherMock.Object,
-                _emailPublisherMock.Object, 
+                _emailPublisherMock.Object,
                 _loggerMock.Object);
         }
 
@@ -186,7 +182,6 @@ namespace Authentication.UnitTests.Controllers
             response.Value.Should().NotBeNull();
         }
 
-        #endregion
-
+        #endregion Register
     }
 }

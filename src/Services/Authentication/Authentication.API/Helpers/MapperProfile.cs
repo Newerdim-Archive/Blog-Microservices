@@ -1,10 +1,4 @@
-﻿using Authentication.API.Dtos;
-using Authentication.API.Entities;
-using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 
 namespace Authentication.API.Helpers
 {
@@ -12,7 +6,6 @@ namespace Authentication.API.Helpers
     {
         public MapperProfile()
         {
-
         }
     }
 }

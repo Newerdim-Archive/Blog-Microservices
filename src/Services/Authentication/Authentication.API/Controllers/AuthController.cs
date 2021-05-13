@@ -5,12 +5,9 @@ using Authentication.API.Models;
 using Authentication.API.Publishers;
 using Authentication.API.Responses;
 using Authentication.API.Services;
-using EventBus.Events;
-using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 
 namespace Authentication.API.Controllers
@@ -28,7 +25,7 @@ namespace Authentication.API.Controllers
         public AuthController(
             IAuthService authService,
             ITokenService tokenService,
-            IUserPublisher userPublisher, 
+            IUserPublisher userPublisher,
             IEmailPublisher emailPublisher,
             ILogger<AuthController> logger)
         {
@@ -45,12 +42,12 @@ namespace Authentication.API.Controllers
         /// <param name="model"></param>
         /// <returns>The id of newly created user with message</returns>
         /// <response code="200">Returns the id of newly created user with message</response>
-        /// <response code="400">If model is invalid</response>    
-        /// <response code="401">If user with the same credentials exists</response> 
+        /// <response code="400">If model is invalid</response>
+        /// <response code="401">If user with the same credentials exists</response>
         [HttpPost(AuthControllerRoutes.Register)]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RegisterResponse))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]   
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Produces("application/json")]
         public async Task<IActionResult> Register(RegisterModel model)
         {

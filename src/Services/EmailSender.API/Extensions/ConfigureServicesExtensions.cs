@@ -15,7 +15,7 @@ namespace EmailSender.API.Extensions
         {
             var rabbitMqConfiguration = new RabbitMqConfiguration();
             section.Bind(rabbitMqConfiguration);
-            
+
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<SendEmailConsumer>();

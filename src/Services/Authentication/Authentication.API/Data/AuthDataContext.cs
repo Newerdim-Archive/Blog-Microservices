@@ -7,8 +7,7 @@ namespace Authentication.API.Data
     {
         public DbSet<User> Users { get; set; }
 
-
-        public AuthDataContext(DbContextOptions<AuthDataContext> options) 
+        public AuthDataContext(DbContextOptions<AuthDataContext> options)
             : base(options) { }
     }
 }

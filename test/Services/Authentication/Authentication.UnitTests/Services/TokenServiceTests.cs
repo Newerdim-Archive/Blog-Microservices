@@ -7,9 +7,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,7 +29,6 @@ namespace Authentication.UnitTests.Services
 
         private ITokenService CreateService()
         {
-
             return new TokenService(
                 _context,
                 _dateProviderMock.Object,
@@ -80,7 +76,7 @@ namespace Authentication.UnitTests.Services
             await act.Should().ThrowAsync<ArgumentException>();
         }
 
-        #endregion
+        #endregion CreateEmailConfirmationTokenAsync
 
         #region IsValidEmailConfirmationTokenAsync
 
@@ -143,7 +139,7 @@ namespace Authentication.UnitTests.Services
             await act.Should().ThrowAsync<ArgumentException>();
         }
 
-        #endregion
+        #endregion IsValidEmailConfirmationTokenAsync
 
         #region GetUserIdFromToken
 
@@ -222,6 +218,6 @@ namespace Authentication.UnitTests.Services
             act.Should().Throw<ArgumentException>();
         }
 
-        #endregion
+        #endregion GetUserIdFromToken
     }
 }

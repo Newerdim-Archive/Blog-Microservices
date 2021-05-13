@@ -22,7 +22,7 @@ namespace EventBus.Messages
         public async Task Consume(ConsumeContext<SendEmailEvent> context)
         {
             var data = context.Message;
-            
+
             if (data is null)
             {
                 _logger.LogInformation($"Empty email message. {context}");
@@ -34,7 +34,7 @@ namespace EventBus.Messages
                 throw new ArgumentException($"Email 'from' is null or empty.");
             }
 
-            foreach(var to in data.To)
+            foreach (var to in data.To)
             {
                 if (string.IsNullOrWhiteSpace(to))
                 {

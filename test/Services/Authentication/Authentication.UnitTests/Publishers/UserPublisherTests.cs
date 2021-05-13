@@ -5,9 +5,6 @@ using FluentAssertions;
 using MassTransit;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -46,7 +43,7 @@ namespace Authentication.UnitTests.Publishers
             // Assert
             _publishEndpointMock.Verify(x =>
                 x.Publish(
-                    It.Is<NewUserMessage>(m => 
+                    It.Is<NewUserMessage>(m =>
                         m.UserId == userId &&
                         m.Username == username &&
                         m.Email == email),

@@ -3,8 +3,6 @@ using Authentication.API.Validators;
 using EventBus.Messages;
 using MassTransit;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Authentication.API.Publishers

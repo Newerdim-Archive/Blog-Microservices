@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EmailSender.API.Helper
 {
@@ -18,6 +15,6 @@ namespace EmailSender.API.Helper
         /// <summary>
         /// Contains hostname and port
         /// </summary>
-        public Uri Uri => new ($"{Hostname}:{Port}");
+        public Uri Uri => new($"{Hostname}:{Port}");
     }
 }
