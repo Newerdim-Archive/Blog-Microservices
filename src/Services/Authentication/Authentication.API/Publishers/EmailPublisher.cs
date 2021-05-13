@@ -1,7 +1,7 @@
 ﻿using Authentication.API.Dtos;
 using Authentication.API.Helpers;
 using Authentication.API.Validators;
-using EventBus.Events;
+using EventBus.Commands;
 using MassTransit;
 using Microsoft.Extensions.Options;
 using System;
@@ -35,7 +35,7 @@ namespace Authentication.API.Publishers
                 Verify your email address - <a href=""{request.EmailConfirmationUrl}/{request.Token}"">Click here!</a> <br><br>
                 Thanks! – The {_companySettings.Name} team";
 
-            var sendEmailEvent = new SendEmailEvent
+            var sendEmailEvent = new SendEmailCommand
             {
                 To = new string[] { request.TargetEmail },
                 Subject = $"{_companySettings.Name} email verification",

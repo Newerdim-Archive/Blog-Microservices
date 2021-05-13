@@ -1,6 +1,6 @@
 ﻿using Authentication.API.Dtos;
 using Authentication.API.Publishers;
-using EventBus.Messages;
+using EventBus.Events;
 using FluentAssertions;
 using MassTransit;
 using Moq;
@@ -43,7 +43,7 @@ namespace Authentication.UnitTests.Publishers
             // Assert
             _publishEndpointMock.Verify(x =>
                 x.Publish(
-                    It.Is<NewUserMessage>(m =>
+                    It.Is<NewUserEvent>(m =>
                         m.UserId == userId &&
                         m.Username == username &&
                         m.Email == email),

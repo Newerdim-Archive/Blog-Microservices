@@ -1,6 +1,6 @@
-﻿namespace EventBus.Events
+﻿namespace EventBus.Commands
 {
-    public class SendEmailEvent
+    public class SendEmailCommand
     {
         public string From { get; set; }
 
