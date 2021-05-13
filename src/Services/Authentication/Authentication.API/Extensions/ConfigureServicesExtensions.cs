@@ -50,7 +50,15 @@ namespace Authentication.API.Extensions
 
             services.AddMassTransit(x =>
             {
-                x.UsingRabbitMq((context, cfg) => cfg.ConfigureEndpoints(context));
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host(rabbitMqSettings.Uri, x =>
+                    {
+                        x.Username(rabbitMqSettings.Username);
+                        x.Password(rabbitMqSettings.Password);
+                    });
+                    cfg.ConfigureEndpoints(context);
+                });
             });
 
             services.AddMassTransitHostedService();
