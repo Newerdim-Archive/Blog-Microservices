@@ -42,17 +42,6 @@ namespace Authentication.API.Controllers
         /// <summary>
         /// Register new user
         /// </summary>
-        /// <remarks>
-        /// Sample request:
-        /// 
-        ///     POST /Register
-        ///     {
-        ///        "username": "User1234"
-        ///        "email": "User1234@email.com"
-        ///        "password": "User1234$@"
-        ///     }
-        ///     
-        /// </remarks>
         /// <param name="model"></param>
         /// <returns>The id of newly created user with message</returns>
         /// <response code="200">Returns the id of newly created user with message</response>
