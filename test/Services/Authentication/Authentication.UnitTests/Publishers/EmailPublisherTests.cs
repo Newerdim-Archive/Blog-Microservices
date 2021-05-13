@@ -1,7 +1,7 @@
 ﻿using Authentication.API.Dtos;
 using Authentication.API.Helpers;
 using Authentication.API.Publishers;
-using EventBus.Events;
+using EventBus.Commands;
 using FluentAssertions;
 using MassTransit;
 using Microsoft.Extensions.Options;
@@ -58,7 +58,7 @@ namespace Authentication.UnitTests.Publishers
             // Assert
             _publishEndpointMock.Verify(x =>
                 x.Publish(
-                    It.Is<SendEmailEvent>(e =>
+                    It.Is<SendEmailCommand>(e =>
                         e.To.Contains(targetEmail) &&
                         e.Subject.Contains("email verification") &&
                         e.Body.Contains(token) &&

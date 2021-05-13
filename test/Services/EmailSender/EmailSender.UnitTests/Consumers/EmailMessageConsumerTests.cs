@@ -1,5 +1,5 @@
 using EmailSender.API.Services;
-using EventBus.Events;
+using EventBus.Commands;
 using EventBus.Messages;
 using FluentAssertions;
 using MassTransit.Testing;
@@ -31,7 +31,7 @@ namespace EmailSender.UnitTests
         [Fact]
         public async Task Consume_ValidData_NoExpections()
         {
-            var message = new SendEmailEvent
+            var message = new SendEmailCommand
             {
                 From = "me@test.com",
                 To = new string[] { "test@test.com", "test1@test.com" },
@@ -46,8 +46,8 @@ namespace EmailSender.UnitTests
             {
                 await harness.InputQueueSendEndpoint.Send(message);
 
-                await harness.Consumed.Any<SendEmailEvent>();
-                var act = await consumerHarness.Consumed.Any<SendEmailEvent>();
+                await harness.Consumed.Any<SendEmailCommand>();
+                var act = await consumerHarness.Consumed.Any<SendEmailCommand>();
 
                 act.Should().BeTrue();
             }
@@ -69,7 +69,7 @@ namespace EmailSender.UnitTests
         [InlineData("test@gmail.com", null)]
         public async Task Consume_InvalidFromAddress_NotSendEmail(string from, string[] to)
         {
-            var message = new SendEmailEvent
+            var message = new SendEmailCommand
             {
                 From = from,
                 To = to,
@@ -84,8 +84,8 @@ namespace EmailSender.UnitTests
             {
                 await harness.InputQueueSendEndpoint.Send(message);
 
-                await harness.Consumed.Any<SendEmailEvent>();
-                var act = await consumerHarness.Consumed.Any<SendEmailEvent>();
+                await harness.Consumed.Any<SendEmailCommand>();
+                var act = await consumerHarness.Consumed.Any<SendEmailCommand>();
 
                 act.Should().BeTrue();
             }
