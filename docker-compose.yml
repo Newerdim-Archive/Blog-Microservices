@@ -24,17 +24,12 @@ services:
     container_name: smtp
     image: namshi/smtp
     restart: always
-    ports:
-      - "25:25"
     networks:
       - blog-network
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
-    ports:
-        - "5672:5672"
-        - "15672:15672"
     networks:
       - blog-network
 
@@ -47,8 +42,6 @@ services:
     build:
       context: .
       dockerfile: src/Services/Authentication/Authentication.API/Dockerfile
-    ports:
-      - "80:8001"
     networks:
       - blog-network
 
@@ -56,12 +49,6 @@ services:
     container_name: authentication-db
     image: mysql
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: c6nZSU8d4VNT8rCw
-    ports:
-      - "3306:3306"
-    volumes:
-      - authentication-db:/var/lib/mysql
     networks:
       - blog-network
 
@@ -69,9 +56,5 @@ services:
     container_name: phpmyadmin
     image: phpmyadmin/phpmyadmin:latest
     restart: always
-    ports:
-      - "8081:80"
-    environment: 
-      - PMA_HOST=authentication-db
     networks:
       - blog-network

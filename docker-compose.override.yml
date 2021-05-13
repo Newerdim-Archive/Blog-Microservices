@@ -6,18 +6,42 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
-      - "80"
-      - "443"
+      - "8081:80"
+      - "8481:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
   authentication.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
-      - "80"
-      - "443"
+      - "8080:80"
+      - "8480:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  authentication.db:
+    environment:
+      MYSQL_ROOT_PASSWORD: c6nZSU8d4VNT8rCw
+    ports:
+      - "3306:3306"
+    volumes:
+      - authentication-db:/var/lib/mysql
+
+  smtp:
+    ports:
+      - "25:25"
+
+  rabbitmq:
+    ports:
+        - "5672:5672"
+        - "15672:15672"
+
+  phpmyadmin:
+    ports:
+      - "8090:80"
+    environment: 
+      - PMA_HOST=authentication-db
