@@ -11,15 +11,15 @@ namespace Authentication.API.Models
         /// <summary>
         /// Username
         /// <para>Minimum length is 3</para>
-        /// <example>User123</example>
         /// </summary>
+        /// <example>User123</example>
         [Required]
         public string Username { get; set; }
 
         /// <summary>
         /// Address email
-        /// <example>User123@gmail.com</example>
         /// </summary>
+        /// <example>User123@mail.com</example>
         [Required]
         public string Email { get; set; }
 
@@ -27,17 +27,16 @@ namespace Authentication.API.Models
         /// Password
         /// <para>Must contain a lower and  uppercase letter and a number</para>
         /// <para>Minimum length is 6</para>
-        /// <example>User123@gmail.com</example>
         /// </summary>
+        /// <example>User123@mail.com</example>
         [Required]
         public string Password { get; set; }
 
         /// <summary>
         /// URL where user should be redirected when click email confirmation link
-        /// <para>Example will redirect to https://www.mysite.com/emailConfirmation?token={token}</para>
-        /// <para>Note: It will put the token at the end</para>
-        /// <example>https://www.mysite.com/emailConfirmation?token=</example>
+        /// <para>Note: It will put a token at the end of URL</para>
         /// </summary>
+        /// <example>https://www.mysite.com/emailConfirmation?token=</example>
         [Required]
         public string EmailConfirmationUrl { get; set; }
     }
