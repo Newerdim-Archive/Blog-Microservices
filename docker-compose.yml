@@ -1,24 +1,11 @@
 version: '3.4'
 
-volumes:
-  authentication-db:
-
-networks:
-  blog-network:
-
 services:
   emailsender.api:
-    container_name: emailsender-api
     image: ${DOCKER_REGISTRY-}emailsenderapi
-    restart: always
-    depends_on: 
-      - rabbitmq
-      - smtp
     build:
       context: .
       dockerfile: src/Services/EmailSender.API/Dockerfile
-    networks:
-      - blog-network
 
   smtp:
     container_name: smtp
