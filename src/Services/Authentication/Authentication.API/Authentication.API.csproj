@@ -9,8 +9,9 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Users\newer\source\repos\Blog\src\Services\Authentication\Authentication.API\Authentication.API.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\Authentication.API.xml</DocumentationFile>
     <NoWarn>1701;1702;1591</NoWarn>
+    <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
