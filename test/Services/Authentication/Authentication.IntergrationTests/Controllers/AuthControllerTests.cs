@@ -3,6 +3,8 @@ using Authentication.API.Helpers;
 using Authentication.API.Models;
 using Authentication.API.Responses;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -17,7 +19,19 @@ namespace Authentication.IntergrationTests.Controllers
 
         public AuthControllerTests(AuthWebApplicationFactory<Startup> factory)
         {
-            _client = factory.CreateClient();
+            var projectDir = Directory.GetCurrentDirectory();
+            var configPath = Path.Combine(projectDir, "appsettings.Test.json");
+
+            var newFactory = factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureAppConfiguration((context, conf) =>
+                {
+                    conf.AddJsonFile(configPath);
+                });
+
+            });
+
+            _client = newFactory.CreateClient();
         }
 
         private static RegisterModel CreateValidRegisterModel()

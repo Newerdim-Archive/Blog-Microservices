@@ -53,11 +53,12 @@ namespace Authentication.API.Extensions
                         x.Username(rabbitMqSettings.Username);
                         x.Password(rabbitMqSettings.Password);
                     });
+
                     cfg.ConfigureEndpoints(context);
                 });
             });
 
-            services.AddMassTransitHostedService();
+            services.AddMassTransitHostedService(true);
         }
 
         public static void AddCustomSettings(this IServiceCollection services, IConfiguration configuration)

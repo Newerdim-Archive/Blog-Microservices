@@ -54,7 +54,10 @@ namespace Authentication.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AuthDataContext context)
         {
-            context.Database.Migrate();
+            if (context.Database.ProviderName != "Microsoft.EntityFrameworkCore.InMemory")
+            {
+                context.Database.Migrate();
+            }
 
             if (env.IsDevelopment())
             {
