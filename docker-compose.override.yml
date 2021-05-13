@@ -29,7 +29,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - ./authentication-db:/var/lib/mysql
+      - authentication-db:/var/lib/mysql
 
   smtp:
     ports:
