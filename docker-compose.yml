@@ -58,6 +58,3 @@ services:
     restart: always
     networks:
       - blog-network
-
-networks:
-  blog-network:
