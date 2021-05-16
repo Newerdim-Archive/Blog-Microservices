@@ -1,7 +1,6 @@
-﻿using EmailSender.API.Helper;
-using EmailSender.API.Services;
+﻿using EmailSender.API.Services;
+using EmailSender.API.Wrappers;
 using FluentAssertions;
-using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.Net.Mail;
@@ -12,47 +11,64 @@ namespace EmailSender.UnitTests.Services
 {
     public class EmailSenderServiceTests
     {
-        private Mock<IOptions<SmtpSettings>> _mockOptions;
+        private readonly Mock<ISmtpClientWrapper> _client = new();
 
-        public EmailSenderServiceTests()
+        private IEmailSenderService CreateService()
         {
-            var mock = new Mock<IOptions<SmtpSettings>>();
-
-            mock.Setup(x => x.Value).Returns(new SmtpSettings
-            {
-                Hostname = "localhost",
-                Port = 25
-            });
-
-            _mockOptions = mock;
+            return new EmailSenderService(_client.Object);
         }
 
         [Fact]
         public async Task SendAsync_ValidData_NoExceptions()
         {
-            var service = new EmailSenderService(_mockOptions.Object);
+            var sut = CreateService();
             var message = new MailMessage("test@test.com", "test2@test.com");
 
-            Func<Task> act = async () => await service.SendAsync(message);
+            Func<Task> act = async () => await sut.SendAsync(message);
+
             await act.Should().NotThrowAsync();
+            _client.Verify(x =>
+                x.SendMailAsync(It.IsAny<MailMessage>()),
+                Times.Once);
         }
 
         [Fact]
         public async Task SendAsync_NullMessage_ThrowsArgumentNullException()
         {
-            var service = new EmailSenderService(_mockOptions.Object);
+            var sut = CreateService();
 
-            Func<Task> act = async () => await service.SendAsync(null);
+            Func<Task> act = async () => await sut.SendAsync(null);
+
             await act.Should().ThrowAsync<ArgumentNullException>();
+            _client.Verify(x =>
+                x.SendMailAsync(It.IsAny<MailMessage>()),
+                Times.Never);
         }
 
         [Fact]
-        public async Task SendAsync_EmptyMessage_ThrowsSmtpException()
+        public async Task SendAsync_EmptyMessage_ArgumentException()
         {
-            var service = new EmailSenderService(_mockOptions.Object);
+            var sut = CreateService();
 
-            Func<Task> act = async () => await service.SendAsync(new MailMessage());
-            await act.Should().ThrowAsync<SmtpException>();
+            Func<Task> act = async () => await sut.SendAsync(new MailMessage());
+
+            await act.Should().ThrowAsync<ArgumentException>();
+            _client.Verify(x =>
+                x.SendMailAsync(It.IsAny<MailMessage>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task SendAsync_NoRecipients_ArgumentException()
+        {
+            var sut = CreateService();
+
+            Func<Task> act = async () => await sut.SendAsync(new MailMessage());
+
+            await act.Should().ThrowAsync<ArgumentException>();
+            _client.Verify(x =>
+                x.SendMailAsync(It.IsAny<MailMessage>()),
+                Times.Never);
         }
     }
 }

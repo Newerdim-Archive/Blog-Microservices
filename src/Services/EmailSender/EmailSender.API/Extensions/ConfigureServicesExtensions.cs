@@ -1,5 +1,6 @@
 ﻿using EmailSender.API.Helper;
 using EmailSender.API.Services;
+using EmailSender.API.Wrappers;
 using EventBus.Messages;
 using EventBus.QueuesName;
 using GreenPipes;
@@ -48,6 +49,7 @@ namespace EmailSender.API.Extensions
         public static void AddCustomService(this IServiceCollection services)
         {
             services.AddTransient<IEmailSenderService, EmailSenderService>();
+            services.AddTransient<ISmtpClientWrapper, SmtpClientWrapper>();
         }
     }
 }
