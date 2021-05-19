@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventBus", "src\Building Bl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailSender.API", "src\Services\EmailSender\EmailSender.API\EmailSender.API.csproj", "{A7A7453B-3177-4121-AE67-1C2776CF5371}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailSender.IntegrationTests", "test\Services\EmailSender\EmailSender.IntegrationTests\EmailSender.IntegrationTests.csproj", "{9047BCC5-6B10-4257-B2C3-785BA26D3D1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{A7A7453B-3177-4121-AE67-1C2776CF5371}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7A7453B-3177-4121-AE67-1C2776CF5371}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7A7453B-3177-4121-AE67-1C2776CF5371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9047BCC5-6B10-4257-B2C3-785BA26D3D1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9047BCC5-6B10-4257-B2C3-785BA26D3D1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9047BCC5-6B10-4257-B2C3-785BA26D3D1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9047BCC5-6B10-4257-B2C3-785BA26D3D1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -99,6 +105,7 @@ Global
 		{F86A81EC-0AF5-4610-AD43-787029988251} = {8B908C77-DC38-4C9A-806E-1DB5A0E6FD3D}
 		{A0B6B8EE-CF29-46EB-9597-74338B2FAC37} = {F86A81EC-0AF5-4610-AD43-787029988251}
 		{A7A7453B-3177-4121-AE67-1C2776CF5371} = {02502E69-6EC9-41BC-84F5-4D66BAA4A888}
+		{9047BCC5-6B10-4257-B2C3-785BA26D3D1A} = {C3B9A599-ECD6-4AF2-AA75-5DD1DAF30527}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2F8AAD22-66BC-4279-B345-BEFC7D01FE5E}
