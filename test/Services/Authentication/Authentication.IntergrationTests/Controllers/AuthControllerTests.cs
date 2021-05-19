@@ -19,19 +19,7 @@ namespace Authentication.IntergrationTests.Controllers
 
         public AuthControllerTests(AuthWebApplicationFactory<Startup> factory)
         {
-            var projectDir = Directory.GetCurrentDirectory();
-            var configPath = Path.Combine(projectDir, "appsettings.Test.json");
-
-            var newFactory = factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureAppConfiguration((context, conf) =>
-                {
-                    conf.AddJsonFile(configPath);
-                });
-
-            });
-
-            _client = newFactory.CreateClient();
+            _client = factory.CreateClient();
         }
 
         private static RegisterModel CreateValidRegisterModel()

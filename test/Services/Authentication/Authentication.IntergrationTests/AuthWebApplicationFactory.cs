@@ -3,9 +3,11 @@ using Authentication.API.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Authentication.IntergrationTests
@@ -16,9 +18,9 @@ namespace Authentication.IntergrationTests
         {
             builder.ConfigureServices(services =>
             {
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType ==
-                        typeof(DbContextOptions<AuthDataContext>));
+
+                var descriptor = services.SingleOrDefault(d => 
+                        d.ServiceType == typeof(DbContextOptions<AuthDataContext>));
 
                 services.Remove(descriptor);
 
@@ -48,6 +50,14 @@ namespace Authentication.IntergrationTests
                     logger.LogError(ex, "An error occurred seeding the " +
                         "database. Error: {Message}", ex.Message);
                 }
+            });
+
+            var projectDir = Directory.GetCurrentDirectory();
+            var configPath = Path.Combine(projectDir, "appsettings.Test.json");
+
+            builder.ConfigureAppConfiguration((context, conf) =>
+            {
+                conf.AddJsonFile(configPath);
             });
         }
 
