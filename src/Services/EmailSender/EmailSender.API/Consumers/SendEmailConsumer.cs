@@ -30,18 +30,25 @@ namespace EventBus.Messages
                 throw new ArgumentException("Email 'From' is null or empty.", nameof(context));
             }
 
+            if (data.To is null)
+            {
+                throw new ArgumentException("Email 'To' is null or empty.", nameof(context));
+            }
+
             foreach (var to in data.To)
             {
                 if (string.IsNullOrWhiteSpace(to))
                 {
-                    throw new ArgumentException("Email 'To' is null or empty.", nameof(context));
+                    // throw new ArgumentException("Email 'To' is null or empty.", nameof(context));
+                    _logger.LogError("Email address from 'To' is null or empty.", nameof(context));
+                    continue;
                 }
 
                 var message = new MailMessage(data.From, to, data.Subject, data.Body);
                 await _emailSender.SendAsync(message);
             }
 
-            await context.RespondAsync(new BaseResult());
+            await context.RespondAsync(new ConsumerResponse());
         }
     }
 }
