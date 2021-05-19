@@ -1,6 +1,8 @@
-﻿using EmailSender.API.Services;
+﻿using EmailSender.API;
+using EmailSender.API.Services;
 using EmailSender.API.Wrappers;
 using EmailSender.IntegrationTests.Mock;
+using EmailSender.IntergrationTests;
 using EventBus.Commands;
 using EventBus.Messages;
 using EventBus.Results;
@@ -8,6 +10,7 @@ using FluentAssertions;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
@@ -18,18 +21,23 @@ using Xunit;
 
 namespace EmailSender.IntegrationTests.Consumers
 {
-    public class SendEmailConsumerTests : IDisposable
+    public class SendEmailConsumerTests : IClassFixture<EmailSenderWebApplicationFactory<Startup>>, IDisposable
     {
-        private readonly TestHarness<SendEmailConsumer, SendEmailCommand> _testHarness;
+        private readonly InMemoryTestHarness _harness = new();
+        private readonly ConsumerTestHarness<SendEmailConsumer> _consumerHarness;
+        private readonly IRequestClient<SendEmailCommand> _client;
 
-        public SendEmailConsumerTests()
+        public SendEmailConsumerTests(EmailSenderWebApplicationFactory<Startup> factory)
         {
-            var serviceCollection = new ServiceCollection()
-                .AddTransient<IEmailSenderService, EmailSenderService>()
-                .AddTransient<ISmtpClientWrapper, FakeSmtpClientWrapper>()
-                .AddLogging();
+            using var scope = factory.Services.CreateScope();
 
-            _testHarness = new TestHarness<SendEmailConsumer, SendEmailCommand>(serviceCollection);
+            var sendEmailConsumer = scope.ServiceProvider.GetRequiredService<SendEmailConsumer>();
+
+            _consumerHarness = _harness.Consumer(() => sendEmailConsumer);
+
+            _harness.Start().Wait();
+
+            _client = _harness.ConnectRequestClient<SendEmailCommand>().GetAwaiter().GetResult();
         }
 
         [Fact]
@@ -45,12 +53,10 @@ namespace EmailSender.IntegrationTests.Consumers
             };
 
             // Act
-            var response = await _testHarness.GetResponse<BaseResult>(command);
+            await _client.GetResponse<ConsumerResponse>(command);
 
             // Assert
-            response.Message.Successful.Should().BeTrue();
-            (await _testHarness.IsHarnessConsumed()).Should().BeTrue();
-            (await _testHarness.IsConsumerHarnessConsumed()).Should().BeTrue();
+            (await IsConsumed()).Should().BeTrue();
         }
 
         [Fact]
@@ -71,7 +77,7 @@ namespace EmailSender.IntegrationTests.Consumers
             };
 
             // Act
-            await _testHarness.GetResponse<BaseResult>(command);
+            await _client.GetResponse<ConsumerResponse>(command);
 
             var mail = await GetMail();
 
@@ -88,19 +94,18 @@ namespace EmailSender.IntegrationTests.Consumers
             // Arrange
 
             // Act
-            Func<Task> act = async () => await _testHarness.GetResponse<BaseResult>(new SendEmailCommand());
+            Func<Task> act = async () => await _client.GetResponse<ConsumerResponse>(new SendEmailCommand());
 
-            var directoryExists = new DirectoryInfo(GetTempFolderPath()).Exists;
+            var files = new DirectoryInfo(GetTempFolderPath()).GetFiles();
 
             // Assert
             await act.Should().ThrowAsync<RequestFaultException>();
-            directoryExists.Should().BeFalse();
+            files.Count().Should().Be(0);
         }
 
         private static string GetTempFolderPath()
         {
             var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-            assemblyName = assemblyName.Replace("IntegrationTests", "API");
 
             var tempFolder = Path.Combine(Path.GetTempPath(), assemblyName);
             return Path.Combine(tempFolder, "MailMessageTemp");
@@ -128,9 +133,17 @@ namespace EmailSender.IntegrationTests.Consumers
                 new DirectoryInfo(GetTempFolderPath()).Delete(true);
             }
 
-            _testHarness.Dispose();
+            _harness.Dispose();
 
             GC.SuppressFinalize(this);
+        }
+
+        private async Task<bool> IsConsumed()
+        {
+            var harnessConsumed = await _harness.Consumed.Any<SendEmailCommand>();
+            var consumerConsumed = await _consumerHarness.Consumed.Any<SendEmailCommand>();
+
+            return harnessConsumed && consumerConsumed;
         }
     }
 }

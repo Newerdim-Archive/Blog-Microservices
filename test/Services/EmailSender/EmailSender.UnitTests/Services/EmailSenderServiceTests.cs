@@ -63,7 +63,7 @@ namespace EmailSender.UnitTests.Services
         {
             var sut = CreateService();
 
-            Func<Task> act = async () => await sut.SendAsync(new MailMessage());
+            Func<Task> act = async () => await sut.SendAsync(new MailMessage("from@mail.com", null));
 
             await act.Should().ThrowAsync<ArgumentException>();
             _client.Verify(x =>

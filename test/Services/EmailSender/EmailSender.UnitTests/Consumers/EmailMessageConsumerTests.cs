@@ -1,100 +1,161 @@
 using EmailSender.API.Services;
 using EventBus.Commands;
 using EventBus.Messages;
+using EventBus.Results;
 using FluentAssertions;
+using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace EmailSender.UnitTests
+namespace EmailSender.UnitTests.Consummers
 {
-    public class EmailMessageConsumerTests
+    public class EmailMessageConsumerTests : IDisposable
     {
         private readonly Mock<IEmailSenderService> _emailSenderServiceMock = new();
-        private readonly ILogger<SendEmailConsumer> _logger;
+        private readonly Mock<ILogger<SendEmailConsumer>> _logger = new();
+
+        private readonly InMemoryTestHarness _harness = new();
+        private readonly ConsumerTestHarness<SendEmailConsumer> _consumerHarness;
+        private readonly IRequestClient<SendEmailCommand> _client;
 
         public EmailMessageConsumerTests()
         {
-            var loggerMock = new Mock<ILogger<SendEmailConsumer>>();
-            _logger = loggerMock.Object;
-        }
+            _consumerHarness = _harness.Consumer(() => 
+                new SendEmailConsumer(_emailSenderServiceMock.Object, _logger.Object));
 
-        private ConsumerTestHarness<SendEmailConsumer> GetConsumer(InMemoryTestHarness harness)
-        {
-            return harness.Consumer(
-                () => new SendEmailConsumer(_emailSenderServiceMock.Object, _logger));
+            _harness.Start().Wait();
+
+            _client = _harness.ConnectRequestClient<SendEmailCommand>().GetAwaiter().GetResult();
         }
 
         [Fact]
         public async Task Consume_ValidData_NoExpections()
         {
+            // Arrange
             var message = new SendEmailCommand
             {
                 From = "me@test.com",
                 To = new string[] { "test@test.com", "test1@test.com" },
             };
+            
+            // Act
+            await _client.GetResponse<ConsumerResponse>(message);
 
-            var harness = new InMemoryTestHarness();
-
-            var consumerHarness = GetConsumer(harness);
-
-            await harness.Start();
-            try
-            {
-                await harness.InputQueueSendEndpoint.Send(message);
-
-                await harness.Consumed.Any<SendEmailCommand>();
-                var act = await consumerHarness.Consumed.Any<SendEmailCommand>();
-
-                act.Should().BeTrue();
-            }
-            finally
-            {
-                await harness.Stop();
-            }
+            // Assert
+            (await IsConsumed()).Should().BeTrue();
 
             _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Exactly(2));
         }
 
         [Theory]
-        [InlineData(null, new string[] { "test@test.com" })]
-        [InlineData("", new string[] { "test@test.com" })]
-        [InlineData("invalid", new string[] { "test@test.com" })]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("invalid")]
 
-        [InlineData("test@gmail.com", new string[] { "" })]
-        [InlineData("test@gmail.com", new string[] { null })]
-        [InlineData("test@gmail.com", null)]
-        public async Task Consume_InvalidFromAddress_NotSendEmail(string from, string[] to)
+        public async Task Consume_InvalidFromAddress_NotSendedEmail(string from)
         {
+            // Arrange
             var message = new SendEmailCommand
             {
                 From = from,
-                To = to,
+                To = new string[] { "test@gmail.com" },
             };
 
-            var harness = new InMemoryTestHarness();
+            // Act
+            Func<Task> act = () => _client.GetResponse<ConsumerResponse>(message);
 
-            var consumerHarness = GetConsumer(harness);
+            // Assert
+            await act.Should().ThrowAsync<RequestFaultException>();
 
-            await harness.Start();
-            try
-            {
-                await harness.InputQueueSendEndpoint.Send(message);
-
-                await harness.Consumed.Any<SendEmailCommand>();
-                var act = await consumerHarness.Consumed.Any<SendEmailCommand>();
-
-                act.Should().BeTrue();
-            }
-            finally
-            {
-                await harness.Stop();
-            }
+            (await IsConsumed()).Should().BeTrue();
 
             _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("invalid")]
+        [InlineData("invalid@")]
+        public async Task Consume_InvalidToAddress_NotSendedEmail(string to)
+        {
+            // Arrange
+            var message = new SendEmailCommand
+            {
+                From = "test@gmail.com",
+                To = new string[] { to },
+            };
+
+            // Act
+            Func<Task> act = () => _client.GetResponse<ConsumerResponse>(message);
+
+            // Assert
+            await act.Should().ThrowAsync<RequestFaultException>();
+
+            (await IsConsumed()).Should().BeTrue();
+
+            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task Consume_NullTo_NotSendedEmail()
+        {
+            // Arrange
+            var message = new SendEmailCommand
+            {
+                From = "test@gmail.com",
+                To = null,
+            };
+
+            // Act
+            Func<Task> act = () => _client.GetResponse<ConsumerResponse>(message);
+
+            // Assert
+            await act.Should().ThrowAsync<RequestFaultException>();
+
+            (await IsConsumed()).Should().BeTrue();
+
+            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public async Task Consume_NullOrEmptyAdressInTo_SendOnlyToValidRecipients(string to)
+        {
+            // Arrange
+            var message = new SendEmailCommand
+            {
+                From = "test@gmail.com",
+                To = new string[] { "valid@mail.com", to },
+            };
+
+            // Act
+            await _client.GetResponse<ConsumerResponse>(message);
+
+
+            // Assert
+            (await IsConsumed()).Should().BeTrue();
+
+            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Once);
+        }
+
+        public void Dispose()
+        {
+            _harness.Stop().Wait();
+
+            GC.SuppressFinalize(this);
+        }
+
+        private async Task<bool> IsConsumed()
+        {
+            var harnessConsumed = await _harness.Consumed.Any<SendEmailCommand>();
+            var consumerConsumed = await _consumerHarness.Consumed.Any<SendEmailCommand>();
+
+            return harnessConsumed && consumerConsumed;
         }
     }
 }
