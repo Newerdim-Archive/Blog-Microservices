@@ -1,6 +1,7 @@
 ﻿using EmailSender.API.Services;
 using EventBus.Commands;
 using EventBus.Events;
+using EventBus.Results;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,28 +25,23 @@ namespace EventBus.Messages
         {
             var data = context.Message;
 
-            if (data is null)
-            {
-                _logger.LogInformation($"Empty email message. {context}");
-                return;
-            }
-
             if (string.IsNullOrWhiteSpace(data.From))
             {
-                throw new ArgumentException($"Email 'from' is null or empty.");
+                throw new ArgumentException("Email 'From' is null or empty.", nameof(context));
             }
 
             foreach (var to in data.To)
             {
                 if (string.IsNullOrWhiteSpace(to))
                 {
-                    _logger.LogWarning($"Email target is null or empty. {context}");
-                    continue;
+                    throw new ArgumentException("Email 'To' is null or empty.", nameof(context));
                 }
 
                 var message = new MailMessage(data.From, to, data.Subject, data.Body);
                 await _emailSender.SendAsync(message);
             }
+
+            await context.RespondAsync(new BaseResult());
         }
     }
 }
