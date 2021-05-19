@@ -3,7 +3,6 @@ using EmailSender.API.Services;
 using EmailSender.API.Wrappers;
 using EventBus.Messages;
 using EventBus.QueuesName;
-using GreenPipes;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,10 +22,10 @@ namespace EmailSender.API.Extensions
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host(rabbitMqSettings.Uri, x =>
+                    cfg.Host(rabbitMqSettings.Uri, s =>
                     {
-                        x.Username(rabbitMqSettings.Username);
-                        x.Password(rabbitMqSettings.Password);
+                        s.Username(rabbitMqSettings.Username);
+                        s.Password(rabbitMqSettings.Password);
                     });
 
                     cfg.ReceiveEndpoint(EmailSenderQueue.SendEmail, e =>
