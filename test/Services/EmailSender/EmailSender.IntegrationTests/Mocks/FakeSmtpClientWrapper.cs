@@ -7,45 +7,32 @@ using System.Threading.Tasks;
 
 namespace EmailSender.IntegrationTests.Mock
 {
-    public class FakeSmtpClientWrapper : ISmtpClientWrapper, IDisposable
+    public class FakeSmtpClientWrapper : ISmtpClientWrapper
     {
-        private readonly SmtpClient _client;
         private readonly string _tempFolderPath;
-
-        private static string GetTempFolderPath()
-        {
-            var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-            var tempFolder = Path.Combine(Path.GetTempPath(), assemblyName);
-            return Path.Combine(tempFolder, "MailMessageTemp");
-        }
 
         public FakeSmtpClientWrapper()
         {
-            _tempFolderPath = GetTempFolderPath();
+            var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+            var tempFolder = Path.Combine(Path.GetTempPath(), assemblyName);
+            _tempFolderPath = Path.Combine(tempFolder, "MailMessageTemp");
 
             if (!Directory.Exists(_tempFolderPath))
             {
                 Directory.CreateDirectory(_tempFolderPath);
             }
+        }
 
-            _client = new SmtpClient("smtpHost")
+        public async Task SendMailAsync(MailMessage message)
+        {
+            using var client = new SmtpClient("smtpHost")
             {
                 UseDefaultCredentials = true,
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
                 PickupDirectoryLocation = _tempFolderPath
             };
-        }
 
-        public void Dispose()
-        {
-            _client.Dispose();
-
-            GC.SuppressFinalize(this);
-        }
-
-        public async Task SendMailAsync(MailMessage message)
-        {
-            await _client.SendMailAsync(message);
+            await client.SendMailAsync(message);
         }
     }
 }
