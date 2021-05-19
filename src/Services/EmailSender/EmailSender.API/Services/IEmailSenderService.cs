@@ -1,5 +1,6 @@
 ﻿using System.Net.Mail;
 using System.Threading.Tasks;
+using System;
 
 namespace EmailSender.API.Services
 {
@@ -14,7 +15,7 @@ namespace EmailSender.API.Services
         /// <param name="message"></param>
         /// <returns></returns>
         /// <exception cref="SmtpException">Throws when email adress is invalid.</exception>
-        /// <exception cref="ArgumentNullException">Throws when message is null.</exception>
+        /// <exception cref="ArgumentException">Throws when message is null.</exception>
         public Task SendAsync(MailMessage message);
     }
 }
