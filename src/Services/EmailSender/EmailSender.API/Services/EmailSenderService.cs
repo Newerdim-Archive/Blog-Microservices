@@ -1,4 +1,5 @@
 ﻿using EmailSender.API.Dtos;
+using EmailSender.API.Exceptions;
 using EmailSender.API.Helper;
 using EmailSender.API.Validators;
 using EmailSender.API.Wrappers;
@@ -26,7 +27,7 @@ namespace EmailSender.API.Services
 
             if (!result.IsValid)
             {
-                throw new ArgumentException($"{typeof(SendRequest)} is invalid. Errors: {string.Concat(result.Errors)}");
+                throw new FluentValidationException(typeof(SendRequest), result, nameof(request));
             }
 
             var message = new MailMessage(
