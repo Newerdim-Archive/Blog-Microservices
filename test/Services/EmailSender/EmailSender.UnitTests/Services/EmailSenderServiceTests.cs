@@ -1,4 +1,5 @@
 ﻿using EmailSender.API.Dtos;
+using EmailSender.API.Exceptions;
 using EmailSender.API.Services;
 using EmailSender.API.Wrappers;
 using FluentAssertions;
@@ -60,7 +61,7 @@ namespace EmailSender.UnitTests.Services
         }
 
         [Fact]
-        public async Task SendAsync_InvalidRequest_ThrowsArgumentNullException()
+        public async Task SendAsync_InvalidRequest_ThrowsFluentValidationException()
         {
             // Arrange
             var sut = CreateService();
@@ -73,7 +74,7 @@ namespace EmailSender.UnitTests.Services
             });
 
             // Assert
-            await act.Should().ThrowAsync<ArgumentException>();
+            await act.Should().ThrowAsync<FluentValidationException>();
 
             _client.Verify(x =>
                 x.SendMailAsync(It.IsAny<MailMessage>()),
