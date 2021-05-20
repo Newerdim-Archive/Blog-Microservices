@@ -1,6 +1,6 @@
 ﻿namespace Authentication.UnitTests.Mocks
 {
-    public class CustomFluentValidatorsTestClass
+    public class FluentValidatorsExtensionsTestClass
     {
         public string Username { get; set; }
         public string Password { get; set; }

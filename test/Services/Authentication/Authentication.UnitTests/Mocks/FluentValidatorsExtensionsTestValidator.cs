@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Authentication.UnitTests.Mocks
 {
-    public class CustomFluentValidatorsTestValidator : AbstractValidator<CustomFluentValidatorsTestClass>
+    public class FluentValidatorsExtensionsTestValidator : AbstractValidator<FluentValidatorsExtensionsTestClass>
     {
-        public CustomFluentValidatorsTestValidator()
+        public FluentValidatorsExtensionsTestValidator()
         {
             CascadeMode = CascadeMode.Continue;
 

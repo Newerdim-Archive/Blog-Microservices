@@ -3,7 +3,7 @@ using System;
 
 namespace Authentication.API.Extensions
 {
-    public static class CustomFluentValidators
+    public static class FluentValidatorsExtensions
     {
         /// <summary>
         /// Validate username length and regex
