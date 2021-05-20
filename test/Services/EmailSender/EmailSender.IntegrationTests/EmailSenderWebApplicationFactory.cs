@@ -3,7 +3,9 @@ using EmailSender.IntegrationTests.Mock;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 using System.Linq;
 
 namespace EmailSender.IntergrationTests
@@ -20,12 +22,14 @@ namespace EmailSender.IntergrationTests
                 services.Remove(descriptor);
 
                 services.AddTransient<ISmtpClientWrapper, FakeSmtpClientWrapper>();
+            });
 
-                descriptor = services.SingleOrDefault(d =>
-                        d.ServiceType == typeof(IBus));
+            var projectDir = Directory.GetCurrentDirectory();
+            var configPath = Path.Combine(projectDir, "appsettings.Test.json");
 
-                // Remove IBus because test uses in memory harness
-                services.Remove(descriptor);
+            builder.ConfigureAppConfiguration((context, conf) =>
+            {
+                conf.AddJsonFile(configPath);
             });
         }
     }
