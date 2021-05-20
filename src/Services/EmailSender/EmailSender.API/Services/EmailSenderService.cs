@@ -1,4 +1,6 @@
-﻿using EmailSender.API.Helper;
+﻿using EmailSender.API.Dtos;
+using EmailSender.API.Helper;
+using EmailSender.API.Validators;
 using EmailSender.API.Wrappers;
 using Microsoft.Extensions.Options;
 using System;
@@ -17,17 +19,21 @@ namespace EmailSender.API.Services
             _client = smtpClientWrapper;
         }
 
-        public async Task SendAsync(MailMessage message)
+        public async Task SendAsync(SendRequest request)
         {
-            if (message is null)
+            var validator = new SendRequestValidator();
+            var result = await validator.ValidateAsync(request);
+
+            if (!result.IsValid)
             {
-                throw new ArgumentNullException(nameof(message), "Received a null argument");
+                throw new ArgumentException($"{typeof(SendRequest)} is invalid. Errors: {string.Concat(result.Errors)}");
             }
 
-            if (message.To.Count == 0)
-            {
-                throw new ArgumentException("Received a argument with empty 'To' field", nameof(message));
-            }
+            var message = new MailMessage(
+                request.From,
+                request.To,
+                request.Subject,
+                request.Body);
 
             await _client.SendMailAsync(message);
         }

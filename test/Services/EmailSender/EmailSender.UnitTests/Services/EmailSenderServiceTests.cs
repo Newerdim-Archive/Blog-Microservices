@@ -1,4 +1,5 @@
-﻿using EmailSender.API.Services;
+﻿using EmailSender.API.Dtos;
+using EmailSender.API.Services;
 using EmailSender.API.Wrappers;
 using FluentAssertions;
 using Moq;
@@ -19,53 +20,61 @@ namespace EmailSender.UnitTests.Services
         }
 
         [Fact]
-        public async Task SendAsync_ValidData_NoExceptions()
+        public async Task SendAsync_ValidRequest_NoExceptions()
         {
+            // Arrange
             var sut = CreateService();
-            var message = new MailMessage("test@test.com", "test2@test.com");
 
+            var message = new SendRequest
+            {
+                To = "user1@mail.com", 
+                From = "company@mail.com"
+            };
+
+            // Act
             Func<Task> act = async () => await sut.SendAsync(message);
 
+            // Assert
             await act.Should().NotThrowAsync();
-            _client.Verify(x =>
+
+            _client.Verify(x => 
                 x.SendMailAsync(It.IsAny<MailMessage>()),
                 Times.Once);
         }
 
         [Fact]
-        public async Task SendAsync_NullMessage_ThrowsArgumentNullException()
+        public async Task SendAsync_NullRequest_ThrowsArgumentNullException()
         {
+            // Arrange
             var sut = CreateService();
 
+            // Act
             Func<Task> act = async () => await sut.SendAsync(null);
 
+            // Assert
             await act.Should().ThrowAsync<ArgumentNullException>();
+
             _client.Verify(x =>
                 x.SendMailAsync(It.IsAny<MailMessage>()),
                 Times.Never);
         }
 
         [Fact]
-        public async Task SendAsync_EmptyMessage_ArgumentException()
+        public async Task SendAsync_InvalidRequest_ThrowsArgumentNullException()
         {
+            // Arrange
             var sut = CreateService();
 
-            Func<Task> act = async () => await sut.SendAsync(new MailMessage());
+            // Act
+            Func<Task> act = async () => await sut.SendAsync(new SendRequest
+            {
+                To = null,
+                From = null
+            });
 
+            // Assert
             await act.Should().ThrowAsync<ArgumentException>();
-            _client.Verify(x =>
-                x.SendMailAsync(It.IsAny<MailMessage>()),
-                Times.Never);
-        }
 
-        [Fact]
-        public async Task SendAsync_NoRecipients_ArgumentException()
-        {
-            var sut = CreateService();
-
-            Func<Task> act = async () => await sut.SendAsync(new MailMessage("from@mail.com", null));
-
-            await act.Should().ThrowAsync<ArgumentException>();
             _client.Verify(x =>
                 x.SendMailAsync(It.IsAny<MailMessage>()),
                 Times.Never);
