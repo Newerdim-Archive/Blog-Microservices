@@ -1,10 +1,14 @@
-﻿using EmailSender.API.Services;
+﻿using EmailSender.API.Dtos;
+using EmailSender.API.Exceptions;
+using EmailSender.API.Services;
+using EmailSender.API.Validators;
 using EventBus.Commands;
 using EventBus.Events;
 using EventBus.Results;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 
@@ -23,32 +27,28 @@ namespace EventBus.Messages
 
         public async Task Consume(ConsumeContext<SendEmailCommand> context)
         {
-            var data = context.Message;
+            var command = context.Message;
 
-            if (string.IsNullOrWhiteSpace(data.From))
+            var validator = new SendEmailCommandValidator();
+            var result = await validator.ValidateAsync(command);
+
+            if (!result.IsValid)
             {
-                throw new ArgumentException("Email 'From' is null or empty.", nameof(context));
+                throw new FluentValidationException(typeof(SendEmailCommand), result, nameof(context));
             }
 
-            if (data.To is null)
+            foreach (var to in command.To)
             {
-                throw new ArgumentException("Email 'To' is null or empty.", nameof(context));
-            }
-
-            foreach (var to in data.To)
-            {
-                if (string.IsNullOrWhiteSpace(to))
+                await _emailSender.SendAsync(new SendRequest
                 {
-                    // throw new ArgumentException("Email 'To' is null or empty.", nameof(context));
-                    _logger.LogError("Email address from 'To' is null or empty.", nameof(context));
-                    continue;
-                }
-
-                var message = new MailMessage(data.From, to, data.Subject, data.Body);
-                await _emailSender.SendAsync(message);
+                    To = to,
+                    From = command.From,
+                    Subject = command.Subject,
+                    Body = command.Body
+                });
             }
 
-            await context.RespondAsync(new ConsumerResponse());
+            await context.RespondAsync(new ConsumerBaseResult());
         }
     }
 }

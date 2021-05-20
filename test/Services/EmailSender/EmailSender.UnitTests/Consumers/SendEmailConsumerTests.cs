@@ -1,3 +1,4 @@
+using EmailSender.API.Dtos;
 using EmailSender.API.Services;
 using EventBus.Commands;
 using EventBus.Messages;
@@ -8,13 +9,12 @@ using MassTransit.Testing;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace EmailSender.UnitTests.Consummers
 {
-    public class EmailMessageConsumerTests : IDisposable
+    public class SendEmailConsumerTests : IDisposable
     {
         private readonly Mock<IEmailSenderService> _emailSenderServiceMock = new();
         private readonly Mock<ILogger<SendEmailConsumer>> _logger = new();
@@ -23,7 +23,7 @@ namespace EmailSender.UnitTests.Consummers
         private readonly ConsumerTestHarness<SendEmailConsumer> _consumerHarness;
         private readonly IRequestClient<SendEmailCommand> _client;
 
-        public EmailMessageConsumerTests()
+        public SendEmailConsumerTests()
         {
             _consumerHarness = _harness.Consumer(() => 
                 new SendEmailConsumer(_emailSenderServiceMock.Object, _logger.Object));
@@ -33,29 +33,31 @@ namespace EmailSender.UnitTests.Consummers
             _client = _harness.ConnectRequestClient<SendEmailCommand>().GetAwaiter().GetResult();
         }
 
+
         [Fact]
         public async Task Consume_ValidData_NoExpections()
         {
             // Arrange
-            var message = new SendEmailCommand
+            var command = new SendEmailCommand
             {
                 From = "me@test.com",
                 To = new string[] { "test@test.com", "test1@test.com" },
             };
             
             // Act
-            await _client.GetResponse<ConsumerResponse>(message);
+            await _client.GetResponse<ConsumerBaseResult>(command);
 
             // Assert
             (await IsConsumed()).Should().BeTrue();
 
-            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Exactly(2));
+            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Exactly(2));
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("invalid")]
+        [InlineData("invalid@")]
 
         public async Task Consume_InvalidFromAddress_NotSendedEmail(string from)
         {
@@ -67,17 +69,19 @@ namespace EmailSender.UnitTests.Consummers
             };
 
             // Act
-            Func<Task> act = () => _client.GetResponse<ConsumerResponse>(message);
+            Func<Task> act = () => _client.GetResponse<ConsumerBaseResult>(message);
 
             // Assert
             await act.Should().ThrowAsync<RequestFaultException>();
 
             (await IsConsumed()).Should().BeTrue();
 
-            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Never);
+            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Never);
         }
 
         [Theory]
+        [InlineData(null)]
+        [InlineData("")]
         [InlineData("invalid")]
         [InlineData("invalid@")]
         public async Task Consume_InvalidToAddress_NotSendedEmail(string to)
@@ -90,14 +94,14 @@ namespace EmailSender.UnitTests.Consummers
             };
 
             // Act
-            Func<Task> act = () => _client.GetResponse<ConsumerResponse>(message);
+            Func<Task> act = () => _client.GetResponse<ConsumerBaseResult>(message);
 
             // Assert
             await act.Should().ThrowAsync<RequestFaultException>();
 
             (await IsConsumed()).Should().BeTrue();
 
-            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Never);
+            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Never);
         }
 
         [Fact]
@@ -111,42 +115,19 @@ namespace EmailSender.UnitTests.Consummers
             };
 
             // Act
-            Func<Task> act = () => _client.GetResponse<ConsumerResponse>(message);
+            Func<Task> act = () => _client.GetResponse<ConsumerBaseResult>(message);
 
             // Assert
             await act.Should().ThrowAsync<RequestFaultException>();
 
             (await IsConsumed()).Should().BeTrue();
 
-            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Never);
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(null)]
-        public async Task Consume_NullOrEmptyAdressInTo_SendOnlyToValidRecipients(string to)
-        {
-            // Arrange
-            var message = new SendEmailCommand
-            {
-                From = "test@gmail.com",
-                To = new string[] { "valid@mail.com", to },
-            };
-
-            // Act
-            await _client.GetResponse<ConsumerResponse>(message);
-
-
-            // Assert
-            (await IsConsumed()).Should().BeTrue();
-
-            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<MailMessage>()), Times.Once);
+            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Never);
         }
 
         public void Dispose()
         {
             _harness.Stop().Wait();
-
             GC.SuppressFinalize(this);
         }
 

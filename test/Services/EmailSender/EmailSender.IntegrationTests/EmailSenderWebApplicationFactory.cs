@@ -24,6 +24,7 @@ namespace EmailSender.IntergrationTests
                 descriptor = services.SingleOrDefault(d =>
                         d.ServiceType == typeof(IBus));
 
+                // Remove IBus because test uses in memory harness
                 services.Remove(descriptor);
             });
         }

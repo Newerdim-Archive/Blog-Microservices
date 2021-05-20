@@ -1,7 +1,4 @@
 ﻿using EmailSender.API;
-using EmailSender.API.Services;
-using EmailSender.API.Wrappers;
-using EmailSender.IntegrationTests.Mock;
 using EmailSender.IntergrationTests;
 using EventBus.Commands;
 using EventBus.Messages;
@@ -10,7 +7,6 @@ using FluentAssertions;
 using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
@@ -53,7 +49,7 @@ namespace EmailSender.IntegrationTests.Consumers
             };
 
             // Act
-            await _client.GetResponse<ConsumerResponse>(command);
+            await _client.GetResponse<ConsumerBaseResult>(command);
 
             // Assert
             (await IsConsumed()).Should().BeTrue();
@@ -77,7 +73,7 @@ namespace EmailSender.IntegrationTests.Consumers
             };
 
             // Act
-            await _client.GetResponse<ConsumerResponse>(command);
+            await _client.GetResponse<ConsumerBaseResult>(command);
 
             var mail = await GetMail();
 
@@ -94,13 +90,22 @@ namespace EmailSender.IntegrationTests.Consumers
             // Arrange
 
             // Act
-            Func<Task> act = async () => await _client.GetResponse<ConsumerResponse>(new SendEmailCommand());
-
-            var files = new DirectoryInfo(GetTempFolderPath()).GetFiles();
+            Func<Task> act = async () => await _client.GetResponse<ConsumerBaseResult>(new SendEmailCommand());
 
             // Assert
             await act.Should().ThrowAsync<RequestFaultException>();
-            files.Count().Should().Be(0);
+        }
+
+        public void Dispose()
+        {
+            if (Directory.Exists(GetTempFolderPath()))
+            {
+                new DirectoryInfo(GetTempFolderPath()).Delete(true);
+            }
+
+            _harness.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
         private static string GetTempFolderPath()
@@ -124,18 +129,6 @@ namespace EmailSender.IntegrationTests.Consumers
             var body = mailLines[10];
 
             return new MailMessage(from, to, subject, body);
-        }
-
-        public void Dispose()
-        {
-            if (Directory.Exists(GetTempFolderPath()))
-            {
-                new DirectoryInfo(GetTempFolderPath()).Delete(true);
-            }
-
-            _harness.Dispose();
-
-            GC.SuppressFinalize(this);
         }
 
         private async Task<bool> IsConsumed()
