@@ -1,10 +1,10 @@
 ﻿namespace EventBus.Results
 {
-    public class ConsumerResponse
+    public class ConsumerBaseResult
     {
         public bool Successful { get; set; }
 
-        public ConsumerResponse(bool successful = true)
+        public ConsumerBaseResult(bool successful = true)
         {
             Successful = successful;
         }
