@@ -5,16 +5,33 @@ namespace Authentication.API.Extensions
 {
     public static class CustomFluentValidators
     {
+        /// <summary>
+        /// Validate username length and regex
+        /// <para>Note: Does not have empty check!</para>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ruleBuilder"></param>
+        /// <returns></returns>
         public static IRuleBuilderOptions<T, string> Username<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
             return ruleBuilder
                 .MinimumLength(3)
                 .MaximumLength(32)
-                .Matches(@"^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$")
-                .WithMessage("{PropertyName} can only contain lower and upper case letters, numbers, spaces, dashes and underscores");
+                .Matches(@"^[\w -]+$")
+                .WithMessage("{PropertyName} can only contain upper and lower case letters, numbers, spaces, hyphens, and underscores ");
         }
 
-        public static IRuleBuilderOptions<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder, bool specialCharacters = false)
+        /// <summary>
+        /// Validate password length and regex
+        /// <para>Note: Does not have empty check!</para>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ruleBuilder"></param>
+        /// <param name="specialCharacters">Check for special characters</param>
+        /// <returns></returns>
+        public static IRuleBuilderOptions<T, string> Password<T>(
+            this IRuleBuilder<T, string> ruleBuilder, 
+            bool specialCharacters = false)
         {
             var rules = ruleBuilder
                 .MinimumLength(6)
@@ -28,17 +45,25 @@ namespace Authentication.API.Extensions
             if (specialCharacters)
             {
                 rules
-                    .Matches(@"[!@#$%^&*()]-+=.,/\[]{}<>'"";:`")
+                    .Matches(@"[\W_]")
                     .WithMessage("{PropertyName} must contain a special character");
             }
 
             return rules;
         }
 
-        public static IRuleBuilderOptions<T, string> Url<T>(this IRuleBuilder<T, string> ruleBuilder)
+        /// <summary>
+        /// Validate URL
+        /// <para>Note: Does not have empty check!</para>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ruleBuilder"></param>
+        /// <param name="uriKind"></param>
+        /// <returns></returns>
+        public static IRuleBuilderOptions<T, string> Url<T>(this IRuleBuilder<T, string> ruleBuilder, UriKind uriKind = UriKind.Absolute)
         {
             return ruleBuilder
-                .Must(x => Uri.IsWellFormedUriString(x, UriKind.Absolute))
+                .Must(x => Uri.IsWellFormedUriString(x, uriKind))
                 .WithMessage("{PropertyName} must be valid URL");
         }
     }
