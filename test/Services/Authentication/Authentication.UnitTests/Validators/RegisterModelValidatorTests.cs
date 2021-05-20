@@ -197,6 +197,8 @@ namespace Authentication.UnitTests.Validators
 
         #endregion ValidatePassword
 
+        #region ValidateEmailConfirmationUrl
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -228,6 +230,8 @@ namespace Authentication.UnitTests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.EmailConfirmationUrl);
-        }
+        } 
+
+        #endregion
     }
 }
