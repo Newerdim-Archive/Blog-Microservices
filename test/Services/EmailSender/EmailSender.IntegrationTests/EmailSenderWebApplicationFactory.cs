@@ -1,6 +1,5 @@
 ﻿using EmailSender.API.Wrappers;
 using EmailSender.IntegrationTests.Mock;
-using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +15,7 @@ namespace EmailSender.IntergrationTests
         {
             builder.ConfigureServices(services =>
             {
-                var descriptor = services.SingleOrDefault(d => 
+                var descriptor = services.SingleOrDefault(d =>
                         d.ServiceType == typeof(ISmtpClientWrapper));
 
                 services.Remove(descriptor);

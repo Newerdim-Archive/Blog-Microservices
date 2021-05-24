@@ -28,7 +28,7 @@ namespace EmailSender.UnitTests.Services
 
             var message = new SendRequest
             {
-                To = "user1@mail.com", 
+                To = "user1@mail.com",
                 From = "company@mail.com"
             };
 
@@ -38,7 +38,7 @@ namespace EmailSender.UnitTests.Services
             // Assert
             await act.Should().NotThrowAsync();
 
-            _client.Verify(x => 
+            _client.Verify(x =>
                 x.SendMailAsync(It.IsAny<MailMessage>()),
                 Times.Once);
         }

@@ -77,7 +77,7 @@ namespace Authentication.UnitTests.Extensions
             result.ShouldHaveAnyValidationError();
         }
 
-        #endregion
+        #endregion Username
 
         #region Password
 
@@ -161,7 +161,7 @@ namespace Authentication.UnitTests.Extensions
             result.ShouldHaveValidationErrorFor(x => x.Password);
         }
 
-        #endregion
+        #endregion Password
 
         #region Url
 
@@ -183,8 +183,8 @@ namespace Authentication.UnitTests.Extensions
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.Url);
-        } 
+        }
 
-        #endregion
+        #endregion Url
     }
 }

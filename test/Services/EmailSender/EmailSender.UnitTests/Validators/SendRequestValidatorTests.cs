@@ -44,6 +44,7 @@ namespace EmailSender.UnitTests.Validators
         }
 
         #region Validate To
+
         [Theory]
         [InlineData("")]
         [InlineData(null)]
@@ -84,10 +85,12 @@ namespace EmailSender.UnitTests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.To);
-        } 
-        #endregion
+        }
+
+        #endregion Validate To
 
         #region Validate From
+
         [Theory]
         [InlineData("")]
         [InlineData(null)]
@@ -128,7 +131,8 @@ namespace EmailSender.UnitTests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.From);
-        } 
-        #endregion
+        }
+
+        #endregion Validate From
     }
 }

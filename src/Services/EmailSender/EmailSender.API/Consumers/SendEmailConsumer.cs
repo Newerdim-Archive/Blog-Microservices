@@ -3,13 +3,9 @@ using EmailSender.API.Exceptions;
 using EmailSender.API.Services;
 using EmailSender.API.Validators;
 using EventBus.Commands;
-using EventBus.Events;
 using EventBus.Results;
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
-using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace EventBus.Messages

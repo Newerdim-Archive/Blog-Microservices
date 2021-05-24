@@ -1,11 +1,7 @@
 ﻿using EmailSender.API.Dtos;
 using EmailSender.API.Exceptions;
-using EmailSender.API.Helper;
 using EmailSender.API.Validators;
 using EmailSender.API.Wrappers;
-using Microsoft.Extensions.Options;
-using System;
-using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
 

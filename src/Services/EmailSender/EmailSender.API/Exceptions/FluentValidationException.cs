@@ -15,7 +15,6 @@ namespace EmailSender.API.Exceptions
         public FluentValidationException(Type testedClass, ValidationResult validationResult, string paramName)
             : base($"{testedClass} is invalid. Errors: {string.Concat(validationResult.Errors)}. Parameter name: {paramName}")
         {
-
         }
     }
 }

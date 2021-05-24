@@ -1,5 +1,4 @@
 ﻿using EmailSender.API.Wrappers;
-using System;
 using System.IO;
 using System.Net.Mail;
 using System.Reflection;

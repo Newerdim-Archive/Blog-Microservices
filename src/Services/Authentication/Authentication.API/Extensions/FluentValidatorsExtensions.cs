@@ -30,7 +30,7 @@ namespace Authentication.API.Extensions
         /// <param name="specialCharacters">Check for special characters</param>
         /// <returns></returns>
         public static IRuleBuilderOptions<T, string> Password<T>(
-            this IRuleBuilder<T, string> ruleBuilder, 
+            this IRuleBuilder<T, string> ruleBuilder,
             bool specialCharacters = false)
         {
             var rules = ruleBuilder

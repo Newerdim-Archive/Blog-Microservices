@@ -1,7 +1,6 @@
-﻿using System.Net.Mail;
-using System.Threading.Tasks;
+﻿using EmailSender.API.Dtos;
 using System;
-using EmailSender.API.Dtos;
+using System.Threading.Tasks;
 
 namespace EmailSender.API.Services
 {

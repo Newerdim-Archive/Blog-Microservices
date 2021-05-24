@@ -230,8 +230,8 @@ namespace Authentication.UnitTests.Validators
 
             // Assert
             result.ShouldHaveValidationErrorFor(x => x.EmailConfirmationUrl);
-        } 
+        }
 
-        #endregion
+        #endregion ValidateEmailConfirmationUrl
     }
 }

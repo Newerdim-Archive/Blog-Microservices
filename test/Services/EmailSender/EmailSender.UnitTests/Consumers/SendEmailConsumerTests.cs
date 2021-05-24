@@ -25,14 +25,13 @@ namespace EmailSender.UnitTests.Consummers
 
         public SendEmailConsumerTests()
         {
-            _consumerHarness = _harness.Consumer(() => 
+            _consumerHarness = _harness.Consumer(() =>
                 new SendEmailConsumer(_emailSenderServiceMock.Object, _logger.Object));
 
             _harness.Start().Wait();
 
             _client = _harness.ConnectRequestClient<SendEmailCommand>().GetAwaiter().GetResult();
         }
-
 
         [Fact]
         public async Task Consume_ValidData_NoExpections()
@@ -43,7 +42,7 @@ namespace EmailSender.UnitTests.Consummers
                 From = "me@test.com",
                 To = new string[] { "test@test.com", "test1@test.com" },
             };
-            
+
             // Act
             await _client.GetResponse<ConsumerBaseResult>(command);
 
@@ -58,7 +57,6 @@ namespace EmailSender.UnitTests.Consummers
         [InlineData("")]
         [InlineData("invalid")]
         [InlineData("invalid@")]
-
         public async Task Consume_InvalidFromAddress_NotSendedEmail(string from)
         {
             // Arrange
