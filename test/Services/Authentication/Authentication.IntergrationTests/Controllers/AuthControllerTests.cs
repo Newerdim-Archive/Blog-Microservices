@@ -19,7 +19,7 @@ namespace Authentication.IntergrationTests.Controllers
         {
             _client = factory.CreateClient();
         }
-        
+
         #region Register
 
         [Fact]
@@ -113,8 +113,8 @@ namespace Authentication.IntergrationTests.Controllers
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseContent.Should().Contain("username already exists");
-        } 
+        }
 
-        #endregion
+        #endregion Register
     }
 }
