@@ -3,8 +3,6 @@ using Authentication.API.Helpers;
 using Authentication.API.Models;
 using Authentication.API.Responses;
 using FluentAssertions;
-using Microsoft.Extensions.Configuration;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -21,24 +19,21 @@ namespace Authentication.IntergrationTests.Controllers
         {
             _client = factory.CreateClient();
         }
-
-        private static RegisterModel CreateValidRegisterModel()
-        {
-            return new RegisterModel
-            {
-                Username = "User1234",
-                Email = "User1234@mail.com",
-                Password = "Password123!",
-                EmailConfirmationUrl = "http://www.website.com"
-            };
-        }
+        
+        #region Register
 
         [Fact]
         public async Task Register_ValidModel_ReturnsOkWithUserIdAndMessage()
         {
             // Arrange
             var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
-            var model = CreateValidRegisterModel();
+            var model = new RegisterModel
+            {
+                Username = "User1234",
+                Email = "User1234@mail.com",
+                Password = "Password123!",
+                EmailConfirmationUrl = "http://www.website.com"
+            };
 
             // Act
             var response = await _client.PostAsJsonAsync(route, model);
@@ -79,8 +74,13 @@ namespace Authentication.IntergrationTests.Controllers
         {
             // Arrange
             var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
-            var model = CreateValidRegisterModel();
-            model.Email = "User1@mail.com";
+            var model = new RegisterModel
+            {
+                Username = "User1234",
+                Email = "User1@mail.com",
+                Password = "Password123!",
+                EmailConfirmationUrl = "http://www.website.com"
+            };
 
             // Act
             var response = await _client.PostAsJsonAsync(route, model);
@@ -97,8 +97,13 @@ namespace Authentication.IntergrationTests.Controllers
         {
             // Arrange
             var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
-            var model = CreateValidRegisterModel();
-            model.Username = "User1";
+            var model = new RegisterModel
+            {
+                Username = "User1",
+                Email = "User1345@mail.com",
+                Password = "Password123!",
+                EmailConfirmationUrl = "http://www.website.com"
+            };
 
             // Act
             var response = await _client.PostAsJsonAsync(route, model);
@@ -108,6 +113,8 @@ namespace Authentication.IntergrationTests.Controllers
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseContent.Should().Contain("username already exists");
-        }
+        } 
+
+        #endregion
     }
 }
