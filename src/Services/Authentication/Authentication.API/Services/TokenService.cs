@@ -138,5 +138,47 @@ namespace Authentication.API.Services
 
             return result ? userId : 0;
         }
+
+        public Task<string> CreateAccessTokenAsync(int userId)
+        {
+            if (userId == 0)
+            {
+                throw new ArgumentException("User id cannot be 0 in access token", nameof(userId));
+            }
+
+            var claims = new Claim[]
+            {
+                new Claim(CustomClaimTypes.UserId, userId.ToString()),
+            };
+
+            var secret = _tokenSettings.AccessTokenSecret;
+
+            var expires = _dateProvider.GetAfterUtcNow(0, 15);
+
+            var token = CreateToken(claims, secret, expires);
+
+            return Task.FromResult(token);
+        }
+
+        public Task<string> CreateRefreshTokenAsync(int userId)
+        {
+            if (userId == 0)
+            {
+                throw new ArgumentException("User id cannot be 0 in refresh token", nameof(userId));
+            }
+
+            var claims = new Claim[]
+            {
+                new Claim(CustomClaimTypes.UserId, userId.ToString()),
+            };
+
+            var secret = _tokenSettings.RefreshTokenSecret;
+
+            var expires = _dateProvider.GetAfterUtcNow(15, 0);
+
+            var token = CreateToken(claims, secret, expires);
+
+            return Task.FromResult(token);
+        }
     }
 }

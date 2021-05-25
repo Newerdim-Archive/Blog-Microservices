@@ -235,5 +235,113 @@ namespace Authentication.UnitTests.Services
         }
 
         #endregion Register
+
+        #region Login
+
+        [Fact]
+        public async Task Login_ValidRequest_ReturnsSuccessfulMessage()
+        {
+            // Arrange
+            var request = new LoginRequest
+            {
+                Username = "User1",
+                Password = "User1!@#"
+            };
+
+            var sut = CreateService();
+
+            // Act
+            var result = await sut.LoginAsync(request);
+
+            // Assert
+            result.Message.Should().Be(LoginResultMessage.Successful);
+        }
+
+        [Theory]
+        [InlineData("User1", "User1!@#", 1)]
+        [InlineData("User2", "User2!@#", 2)]
+        public async Task Login_ValidRequest_ReturnsValidUserId(string username, string password, int expectedUserId)
+        {
+            // Arrange
+            var request = new LoginRequest
+            {
+                Username = username,
+                Password = password
+            };
+
+            var sut = CreateService();
+
+            // Act
+            var result = await sut.LoginAsync(request);
+
+            // Assert
+            result.UserId.Should().Be(expectedUserId);
+        }
+
+        [Theory]
+        [InlineData("uSER1", "User1!@#", 1)]
+        [InlineData("uSER2", "User2!@#", 2)]
+        public async Task Login_DifferentCaseOfLettersInUsername_ReturnsValidUserId(
+            string username,
+            string password,
+            int expectedUserId)
+        {
+            // Arrange
+            var request = new LoginRequest
+            {
+                Username = username,
+                Password = password
+            };
+
+            var sut = CreateService();
+
+            // Act
+            var result = await sut.LoginAsync(request);
+
+            // Assert
+            result.UserId.Should().Be(expectedUserId);
+        }
+
+        [Fact]
+        public async Task Login_PasswordNotMatch_ReturnsPasswordNotMatchMessage()
+        {
+            // Arrange
+            var request = new LoginRequest
+            {
+                Username = "User1",
+                Password = "notMatching"
+            };
+
+            var sut = CreateService();
+
+            // Act
+            var result = await sut.LoginAsync(request);
+
+            // Assert
+            result.UserId.Should().Be(0);
+            result.Message.Should().Be(LoginResultMessage.PasswordNotMatch);
+        }
+
+        [Fact]
+        public async Task Login_UserNotExist_ReturnsUserNotExistMessage()
+        {
+            // Arrange
+            var request = new LoginRequest
+            {
+                Username = "UserNotExist",
+                Password = "Password123!"
+            };
+
+            var sut = CreateService();
+
+            // Act
+            var result = await sut.LoginAsync(request);
+
+            // Assert
+            result.UserId.Should().Be(0);
+            result.Message.Should().Be(LoginResultMessage.UserNotExist);
+        }
+
+        #endregion Login
     }
 }

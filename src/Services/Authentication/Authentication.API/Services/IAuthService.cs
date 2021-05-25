@@ -14,5 +14,14 @@ namespace Authentication.API.Services
         /// <exception cref="ArgumentException">Throws when request properity is empty</exception>
         /// <exception cref="ArgumentNullException">Throws when request is null</exception>
         Task<RegisterResult> RegisterAsync(RegisterRequest request);
+
+        /// <summary>
+        /// Login user
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Throws when any of fields is empty</exception>
+        /// <exception cref="ArgumentNullException">Throws when request is null</exception>
+        Task<LoginResult> LoginAsync(LoginRequest request);
     }
 }

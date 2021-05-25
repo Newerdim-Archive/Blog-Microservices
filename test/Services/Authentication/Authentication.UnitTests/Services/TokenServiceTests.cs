@@ -18,13 +18,22 @@ namespace Authentication.UnitTests.Services
         private readonly Mock<IDateProvider> _dateProviderMock = new();
         private readonly Mock<IOptions<TokenSettings>> _tokenSettingsOptionsMock = new();
 
+        private readonly ITokenService _sut;
+
         public TokenServiceTests(AuthSeedDataFixture fixture)
         {
             _context = fixture.Context;
             _tokenSettingsOptionsMock.Setup(x => x.Value).Returns(new TokenSettings
             {
-                EmailConfirmationSecret = "SecretForEmailConfirmation"
+                EmailConfirmationSecret = "SecretForEmailConfirmation",
+                AccessTokenSecret = "SecretForAccessToken",
+                RefreshTokenSecret = "SecretForRefreshToken"
             });
+
+            _sut = new TokenService(
+                _context,
+                _dateProviderMock.Object,
+                _tokenSettingsOptionsMock.Object);
         }
 
         private ITokenService CreateService()
@@ -219,5 +228,112 @@ namespace Authentication.UnitTests.Services
         }
 
         #endregion GetUserIdFromToken
+
+        #region CreateAccessTokenAsync
+
+        [Fact]
+        public async Task CreateAccessTokenAsync_ValidUserId_ReturnsToken()
+        {
+            // Arrange
+            _dateProviderMock.Setup(x => x
+                .GetAfterUtcNow(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(DateTimeOffset.UtcNow.AddMinutes(15));
+
+            // Act
+            var result = await _sut.CreateAccessTokenAsync(1);
+
+            // Assert
+            result.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
+        public async Task CreateAccessTokenAsync_ValidUserId_ExpiresIn15Minutes()
+        {
+            // Arrange
+            _dateProviderMock.Setup(x => x
+                .GetAfterUtcNow(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(DateTimeOffset.UtcNow.AddMinutes(15));
+
+            // Act
+            var result = await _sut.CreateAccessTokenAsync(1);
+
+            // Assert
+            _dateProviderMock.Verify(x => x
+                .GetAfterUtcNow(
+                    It.Is<int>(x => x == 0), // days
+                    It.Is<int>(x => x == 15))); // minutes
+        }
+
+        [Fact]
+        public async Task CreateAccessTokenAsync_UserIdIs0_ThrowsArgumentException()
+        {
+            // Arrange
+            _dateProviderMock.Setup(x => x
+                .GetAfterUtcNow(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(DateTimeOffset.UtcNow.AddMinutes(15));
+
+            // Act
+            Func<Task> act = async () => await _sut.CreateAccessTokenAsync(0);
+
+            // Assert
+            await act.Should().ThrowAsync<ArgumentException>();
+        }
+
+        #endregion CreateAccessTokenAsync
+
+        #region CreateRefreshTokenAsync
+
+        [Fact]
+        public async Task CreateRefreshTokenAsync_ValidUserId_ReturnsToken()
+        {
+            // Arrange
+
+            _dateProviderMock.Setup(x => x
+                .GetAfterUtcNow(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(DateTimeOffset.UtcNow.AddDays(15));
+
+            // Act
+            var result = await _sut.CreateRefreshTokenAsync(1);
+
+            // Assert
+            result.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Fact]
+        public async Task CreateRefreshTokenAsync_ValidUserId_ExpiresIn15Days()
+        {
+            // Arrange
+
+            _dateProviderMock.Setup(x => x
+                .GetAfterUtcNow(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(DateTimeOffset.UtcNow.AddDays(15));
+
+            // Act
+            var result = await _sut.CreateRefreshTokenAsync(1);
+
+            // Assert
+            _dateProviderMock.Verify(x => x
+                .GetAfterUtcNow(
+                    It.Is<int>(x => x == 15), // days
+                    It.Is<int>(x => x == 0))); // minutes
+        }
+
+        [Fact]
+        public async Task CreateRefreshTokenAsync_UserIdIs0_ThrowsArgumentException()
+        {
+            // Arrange
+
+            _dateProviderMock.Setup(x => x
+                .GetAfterUtcNow(It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(DateTimeOffset.UtcNow.AddDays(15));
+
+            // Act
+            Func<Task> act = async () => await _sut.CreateRefreshTokenAsync(0);
+
+            // Assert
+            await act.Should().ThrowAsync<ArgumentException>();
+        }
+
+        #endregion CreateRefreshTokenAsync
     }
 }
