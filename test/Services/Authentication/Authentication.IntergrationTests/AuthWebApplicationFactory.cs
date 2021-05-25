@@ -18,8 +18,7 @@ namespace Authentication.IntergrationTests
         {
             builder.ConfigureServices(services =>
             {
-
-                var descriptor = services.SingleOrDefault(d => 
+                var descriptor = services.SingleOrDefault(d =>
                         d.ServiceType == typeof(DbContextOptions<AuthDataContext>));
 
                 services.Remove(descriptor);
