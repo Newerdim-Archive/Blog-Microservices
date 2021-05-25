@@ -417,7 +417,7 @@ namespace Authentication.UnitTests.Controllers
             // Assert
             _responseCookiesMock.Verify(x => x
                 .Append(
-                    It.Is<string>(x => x == "refresh_token"), 
+                    It.Is<string>(x => x == "refresh_token"),
                     It.Is<string>(x => x == excpetedToken),
                     It.Is<CookieOptions>(x => x.HttpOnly == true)));
         }

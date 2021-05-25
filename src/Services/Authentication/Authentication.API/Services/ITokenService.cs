@@ -36,7 +36,6 @@ namespace Authentication.API.Services
         /// <exception cref="ArgumentException">Throws when userId is 0 or user with that id not exists</exception>
         Task<string> CreateAccessTokenAsync(int userId);
 
-
         /// <summary>
         /// Create refresh token
         /// </summary>

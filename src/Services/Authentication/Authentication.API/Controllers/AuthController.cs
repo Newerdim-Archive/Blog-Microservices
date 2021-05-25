@@ -149,7 +149,7 @@ namespace Authentication.API.Controllers
         private void AddRefreshTokenToCookies(string token)
         {
             var cookieName = "refresh_token";
-            
+
             var cookieOptions = new CookieOptions { HttpOnly = true };
 
             HttpContext.Response.Cookies.Append(cookieName, token, cookieOptions);

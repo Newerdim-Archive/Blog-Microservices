@@ -279,7 +279,7 @@ namespace Authentication.UnitTests.Services
             await act.Should().ThrowAsync<ArgumentException>();
         }
 
-        #endregion
+        #endregion CreateAccessTokenAsync
 
         #region CreateRefreshTokenAsync
 
@@ -334,6 +334,6 @@ namespace Authentication.UnitTests.Services
             await act.Should().ThrowAsync<ArgumentException>();
         }
 
-        #endregion
+        #endregion CreateRefreshTokenAsync
     }
 }
