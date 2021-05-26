@@ -25,9 +25,8 @@ namespace Authentication.UnitTests.Controllers
         private readonly Mock<IEmailPublisher> _emailPublisherMock = new();
         private readonly Mock<ILogger<AuthController>> _loggerMock = new();
 
-        private readonly Mock<HttpContext> _httpContextMock = new();
-        private readonly Mock<HttpResponse> _httpResponseMock = new();
         private readonly Mock<IResponseCookies> _responseCookiesMock = new();
+        private readonly Mock<IRequestCookieCollection> _requestCookieCollectionMock = new();
 
         private readonly AuthController _sut;
 
@@ -61,14 +60,26 @@ namespace Authentication.UnitTests.Controllers
 
         private ControllerContext CreateControllerContext()
         {
-            _httpResponseMock.Setup(x => x.Cookies)
+            var httpContextMock = new Mock<HttpContext>();
+            var httpResponseMock = new Mock<HttpResponse>();
+            var httpRequestMock = new Mock<HttpRequest>();
+
+            httpResponseMock.Setup(x => x.Cookies)
                 .Returns(_responseCookiesMock.Object);
 
-            _httpContextMock.Setup(x => x.Response)
-                .Returns(_httpResponseMock.Object);
+            httpRequestMock.Setup(x => x.Cookies)
+                .Returns(_requestCookieCollectionMock.Object);
 
-            var controllerContext = new ControllerContext();
-            controllerContext.HttpContext = _httpContextMock.Object;
+            httpContextMock.Setup(x => x.Response)
+                .Returns(httpResponseMock.Object);
+
+            httpContextMock.Setup(x => x.Request)
+                .Returns(httpRequestMock.Object);
+
+            var controllerContext = new ControllerContext
+            {
+                HttpContext = httpContextMock.Object
+            };
 
             return controllerContext;
         }
@@ -423,5 +434,217 @@ namespace Authentication.UnitTests.Controllers
         }
 
         #endregion Login
+
+        #region RefreshTokens
+
+        [Fact]
+        public async Task RefreshTokens_ValidRefreshToken_ReturnsOkWithMessage()
+        {
+            // Arrange
+            var refreshToken = "valid";
+
+            _requestCookieCollectionMock.Setup(x => x
+                .TryGetValue(It.IsAny<string>(), out refreshToken))
+                .Returns(true);
+
+            _tokenServiceMock.Setup(x => x
+                .IsValidRefreshTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            _tokenServiceMock.Setup(x => x
+                .CreateRefreshTokenAsync(It.IsAny<int>()))
+                .ReturnsAsync("token");
+
+            // Act
+            var result = await _sut.RefreshTokens() as OkObjectResult;
+            
+            var response = result.Value as RefreshTokensResponse;
+
+            // Assert
+            result.Should().NotBeNull();
+            response.Message.Should().Be("Tokens refreshed successfully");
+        }
+
+        [Fact]
+        public async Task RefreshTokens_ValidRefreshToken_RefreshOldRefreshToken()
+        {
+            // Arrange
+            var expectedRefreshToken = "newToken";
+
+            _requestCookieCollectionMock.Setup(x => x
+                .TryGetValue(It.IsAny<string>(), out expectedRefreshToken))
+                .Returns(true);
+
+            _tokenServiceMock.Setup(x => x
+                .IsValidRefreshTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            _tokenServiceMock.Setup(x => x
+                .CreateRefreshTokenAsync(It.IsAny<int>()))
+                .ReturnsAsync(expectedRefreshToken);
+
+            // Act
+            var result = await _sut.RefreshTokens() as OkObjectResult;
+
+            var response = result.Value as RefreshTokensResponse;
+
+            // Assert
+            _responseCookiesMock.Verify(x => x
+                .Append(
+                    It.Is<string>(key => key == "refresh_token"),
+                    It.Is<string>(value => value == expectedRefreshToken),
+                    It.Is<CookieOptions>(opt => opt.HttpOnly == true)));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public async Task RefreshTokens_NullOrEmptyRefreshToken_ReturnsUnauthorizedWithMessage(
+            string refreshToken)
+        {
+            // Arrange
+            // Without this visual studio show that refreshToken isn't used
+            var outRefreshToken = refreshToken;
+
+            _requestCookieCollectionMock.Setup(x => x
+                .TryGetValue(It.IsAny<string>(), out outRefreshToken))
+                .Returns(true);
+
+            // Act
+            var result = await _sut.RefreshTokens() as UnauthorizedObjectResult;
+
+            var response = result.Value as string;
+
+            // Assert
+            result.Should().NotBeNull();
+            response.Should().Be("Refresh token is empty or does not exists");
+        }
+
+        [Fact]
+        public async Task RefreshTokens_RefreshTokenNotExist_ReturnsUnauthorizedWithMessage()
+        {
+            // Arrange
+            string outRefreshToken = null;
+
+            _requestCookieCollectionMock.Setup(x => x
+                .TryGetValue(It.IsAny<string>(), out outRefreshToken))
+                .Returns(false);
+
+            // Act
+            var result = await _sut.RefreshTokens() as UnauthorizedObjectResult;
+
+            var response = result.Value as string;
+
+            // Assert
+            result.Should().NotBeNull();
+            response.Should().Be("Refresh token is empty or does not exists");
+        }
+
+        [Fact]
+        public async Task RefreshTokens_InvalidRefreshToken_ReturnsUnauthorizedWithMessage()
+        {
+            // Arrange
+            string refreshToken = "invalid";
+
+            _requestCookieCollectionMock.Setup(x => x
+                .TryGetValue(It.IsAny<string>(), out refreshToken))
+                .Returns(true);
+
+            _tokenServiceMock.Setup(x => x
+                .IsValidRefreshTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
+
+            // Act
+            var result = await _sut.RefreshTokens() as UnauthorizedObjectResult;
+
+            var response = result.Value as string;
+
+            // Assert
+            result.Should().NotBeNull();
+            response.Should().Be("Refresh token is invalid");
+        }
+
+        [Fact]
+        public async Task RefreshTokens_NullOrEmptyUserIdInRefreshToken_ReturnsUnauthorizedWithMessage()
+        {
+            // Arrange
+            string refreshToken = "invalid";
+
+            _requestCookieCollectionMock.Setup(x => x
+                .TryGetValue(It.IsAny<string>(), out refreshToken))
+                .Returns(true);
+
+            _tokenServiceMock.Setup(x => x
+                .IsValidRefreshTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
+
+            // Act
+            var result = await _sut.RefreshTokens() as UnauthorizedObjectResult;
+
+            var response = result.Value as string;
+
+            // Assert
+            result.Should().NotBeNull();
+            response.Should().Be("Refresh token is invalid");
+        }
+
+        [Fact]
+        public async Task RefreshTokens_RefreshTokenNotHaveUserId_ReturnsUnauthorizedWithMessage()
+        {
+            // Arrange
+            string refreshToken = "invalid";
+
+            _requestCookieCollectionMock.Setup(x => x
+                .TryGetValue(It.IsAny<string>(), out refreshToken))
+                .Returns(true);
+
+            _tokenServiceMock.Setup(x => x
+                .IsValidRefreshTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync(false);
+
+            // Act
+            var result = await _sut.RefreshTokens() as UnauthorizedObjectResult;
+
+            var response = result.Value as string;
+
+            // Assert
+            result.Should().NotBeNull();
+            response.Should().Be("Refresh token is invalid");
+        }
+
+        [Fact]
+        public async Task RefreshTokens_ValidRefreshToken_ReturnsAccessToken()
+        {
+            // Arrange
+            var refreshToken = "token";
+            var expectedAccessToken = "token";
+
+            _requestCookieCollectionMock.Setup(x => x
+                .TryGetValue(It.IsAny<string>(), out refreshToken))
+                .Returns(true);
+
+            _tokenServiceMock.Setup(x => x
+                .IsValidRefreshTokenAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+            _tokenServiceMock.Setup(x => x
+                .CreateRefreshTokenAsync(It.IsAny<int>()))
+                .ReturnsAsync("refreshToken");
+
+            _tokenServiceMock.Setup(x => x
+                .CreateAccessTokenAsync(It.IsAny<int>()))
+                .ReturnsAsync(expectedAccessToken);
+
+            // Act
+            var result = await _sut.RefreshTokens() as OkObjectResult;
+
+            var response = result.Value as RefreshTokensResponse;
+
+            // Assert
+            response.AccessToken.Should().NotBeNullOrWhiteSpace();
+        }
+
+        #endregion
     }
 }
