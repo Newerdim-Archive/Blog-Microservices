@@ -28,7 +28,7 @@ namespace Authentication.UnitTests.Providers
         }
 
         [Fact]
-        public void GetAfterUtcNow_ValidData_ReturnsDateNow()
+        public void GetAfterUtcNow_ValidData_ReturnsExpectedDate()
         {
             // Arrange
             var exceptedDate = DateTimeOffset.UtcNow
