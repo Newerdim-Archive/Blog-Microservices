@@ -1,5 +1,4 @@
-﻿using Authentication.API.Data;
-using Authentication.API.Helpers;
+﻿using Authentication.API.Helpers;
 using Authentication.API.Providers;
 using Authentication.API.Services;
 using Authentication.UnitTests.DataFixture;
@@ -14,15 +13,13 @@ namespace Authentication.UnitTests.Services
 {
     public class TokenServiceTests : IClassFixture<AuthSeedDataFixture>
     {
-        private readonly AuthDataContext _context;
         private readonly Mock<IDateProvider> _dateProviderMock = new();
         private readonly Mock<IOptions<TokenSettings>> _tokenSettingsOptionsMock = new();
 
         private readonly ITokenService _sut;
 
-        public TokenServiceTests(AuthSeedDataFixture fixture)
+        public TokenServiceTests()
         {
-            _context = fixture.Context;
             _tokenSettingsOptionsMock.Setup(x => x.Value).Returns(new TokenSettings
             {
                 EmailConfirmationSecret = "SecretForEmailConfirmation",
@@ -31,7 +28,6 @@ namespace Authentication.UnitTests.Services
             });
 
             _sut = new TokenService(
-                _context,
                 _dateProviderMock.Object,
                 _tokenSettingsOptionsMock.Object);
         }
@@ -39,116 +35,9 @@ namespace Authentication.UnitTests.Services
         private ITokenService CreateService()
         {
             return new TokenService(
-                _context,
                 _dateProviderMock.Object,
                 _tokenSettingsOptionsMock.Object);
         }
-
-        #region CreateEmailConfirmationTokenAsync
-
-        [Fact]
-        public async Task CreateEmailConfirmationTokenAsync_UserExists_ReturnsToken()
-        {
-            // Arrange
-            var sut = CreateService();
-
-            // Act
-            var result = await sut.CreateEmailConfirmationTokenAsync(1);
-
-            // Assert
-            result.Should().NotBeNullOrWhiteSpace();
-        }
-
-        [Fact]
-        public async Task CreateEmailConfirmationTokenAsync_UserIdIs0_ThrowsArgumentException()
-        {
-            // Arrange
-            var sut = CreateService();
-
-            // Act
-            Func<Task<string>> act = async () => await sut.CreateEmailConfirmationTokenAsync(0);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>();
-        }
-
-        [Fact]
-        public async Task CreateEmailConfirmationTokenAsync_UserNotExists_ThrowsArgumentException()
-        {
-            // Arrange
-            var sut = CreateService();
-
-            // Act
-            Func<Task<string>> act = async () => await sut.CreateEmailConfirmationTokenAsync(999);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>();
-        }
-
-        #endregion CreateEmailConfirmationTokenAsync
-
-        #region IsValidEmailConfirmationTokenAsync
-
-        [Fact]
-        public async Task IsValidEmailConfirmationTokenAsync_ValidToken_ReturnsTrue()
-        {
-            // Arrange
-            var validToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIxIiwicmVzIjoiZW1jIiwibmJmIjoxNjE5MjgzMzE2LCJleHAiOjE2MTkyODY5MTYsImlhdCI6MTYxOTI4MzMxNiwiaXNzIjoiQXV0aFNlcnZpY2UiLCJhdWQiOiJBdXRoU2VydmljZSJ9.M4FAkPYmMIGFEyjDUH6_Uuf36u5CV1jNEDHhW67MEUy1b-m1T0Nyj6ewLn27ASjMk_KiYU3-BoXmtL56SIenmw";
-            var sut = CreateService();
-
-            // Act
-            var result = await sut.IsValidEmailConfirmationTokenAsync(validToken);
-
-            // Assert
-            result.Should().BeTrue();
-        }
-
-        [Fact]
-        public async Task IsValidEmailConfirmationTokenAsync_WrongReason_ReturnsFalse()
-        {
-            // Arrange
-            var invalidToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIxIiwicmVzIjoiZWJkIiwibmJmIjoxNjE5MjgzMzE2LCJleHAiOjE2MTkyODY5MTYsImlhdCI6MTYxOTI4MzMxNiwiaXNzIjoiQXV0aFNlcnZpY2UiLCJhdWQiOiJBdXRoU2VydmljZSJ9.D0R2vVet6lz7OvTZ6bj6RKmyVi_q1IwfrL1PmFalHoJxO18R56FfM__gCHg4o_cKAN__CLs9k_GuduiTWZ1kFA";
-
-            var sut = CreateService();
-
-            // Act
-            var result = await sut.IsValidEmailConfirmationTokenAsync(invalidToken);
-
-            // Assert
-            result.Should().BeFalse();
-        }
-
-        [Fact]
-        public async Task IsValidEmailConfirmationTokenAsync_InvalidToken_ReturnsFalse()
-        {
-            // Arrange
-            var invalidToken = "invalid";
-
-            var sut = CreateService();
-
-            // Act
-            var result = await sut.IsValidEmailConfirmationTokenAsync(invalidToken);
-
-            // Assert
-            result.Should().BeFalse();
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        public async Task IsValidEmailConfirmationTokenAsync_EmptyAndNullToken_ThrowsArgumentException(string emptyOrNullToken)
-        {
-            // Arrange
-            var sut = CreateService();
-
-            // Act
-            Func<Task<bool>> act = async () => await sut.IsValidEmailConfirmationTokenAsync(emptyOrNullToken);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>();
-        }
-
-        #endregion IsValidEmailConfirmationTokenAsync
 
         #region GetUserIdFromToken
 

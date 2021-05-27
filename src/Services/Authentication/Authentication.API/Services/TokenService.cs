@@ -15,40 +15,15 @@ namespace Authentication.API.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly AuthDataContext _context;
         private readonly IDateProvider _dateProvider;
         private readonly TokenSettings _tokenSettings;
 
         public TokenService(
-            AuthDataContext context,
             IDateProvider dateProvider,
             IOptions<TokenSettings> tokenOptions)
         {
-            _context = context;
             _dateProvider = dateProvider;
             _tokenSettings = tokenOptions.Value;
-        }
-
-        public async Task<string> CreateEmailConfirmationTokenAsync(int userId)
-        {
-            if (userId == 0)
-            {
-                throw new ArgumentException("UserId cannot be 0");
-            }
-
-            var userInDb = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-
-            if (userInDb is null)
-            {
-                throw new ArgumentException($"User with userId={userId} not exists");
-            }
-
-            var claims = new[]
-            {
-                new Claim(CustomClaimTypes.UserId, userId.ToString()),
-            };
-
-            return CreateToken(claims, _tokenSettings.EmailConfirmationSecret, null);
         }
 
         private static string CreateToken(Claim[] claims, string secret, DateTimeOffset? expires)
@@ -70,27 +45,6 @@ namespace Authentication.API.Services
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(securityToken);
-        }
-
-        public Task<bool> IsValidEmailConfirmationTokenAsync(string token)
-        {
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                throw new ArgumentException($"'{nameof(token)}' cannot be null or whitespace.", nameof(token));
-            }
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = GetValidationParameters(false, _tokenSettings.EmailConfirmationSecret);
-
-            try
-            {
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);            }
-            catch
-            {
-                return Task.FromResult(false);
-            }
-
-            return Task.FromResult(true);
         }
 
         private static TokenValidationParameters GetValidationParameters(bool validateLifetime, string secret)
