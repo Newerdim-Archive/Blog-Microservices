@@ -34,14 +34,16 @@ namespace Authentication.UnitTests.Services
         #region Register
 
         [Theory, AutoData]
-        public async Task Register_ValidData_ReturnsSuccessfulAndUserId(string username, MailAddress email, string password)
+        public async Task Register_ValidData_ReturnsSuccessfulAndUserId(
+            string username,
+            MailAddress email)
         {
             // Arrange
             var request = new RegisterRequest
             {
                 Username = username,
                 Email = email.Address,
-                Password = password
+                Password = "Password123!@#"
             };
 
             // Act
@@ -53,40 +55,50 @@ namespace Authentication.UnitTests.Services
         }
 
         [Theory, AutoData]
-        public async Task Register_ValidData_CreateValidUserInDb(string username, MailAddress email, string password)
+        public async Task Register_ValidData_CreateValidUserInDb(
+            string username,
+            MailAddress email)
         {
             // Arrange
             var now = DateTimeOffset.UtcNow;
-
-            _dateProviderMock.Setup(x => x.GetUtcNow()).Returns(now);
 
             var request = new RegisterRequest
             {
                 Username = username,
                 Email = email.Address,
-                Password = password
+                Password = "Password123!@#"
             };
+
+            _dateProviderMock.Setup(x => x.GetUtcNow()).Returns(now);
 
             // Act
             var response = await _sut.RegisterAsync(request);
 
-            var userInDb = await _context.Users.FirstAsync(u => u.Id == response.UserId);
+            var userInDb = await _context.Users
+                .FirstAsync(u => u.Id == response.UserId);
 
             // Assert
-
             userInDb.Username.Should().Be(username);
             userInDb.Email.Should().Be(email.Address);
+
             userInDb.PasswordHash.Should().NotBeEmpty();
             userInDb.PasswordSalt.Should().NotBeEmpty();
+
             userInDb.ConfirmedEmail.Should().BeFalse();
+
             userInDb.Created.Should().Be(now);
             userInDb.LastChange.Should().Be(now);
         }
 
         [Theory, AutoData]
-        public async Task Register_ValidData_CreateValidPasswordHashAndSalt(string username, MailAddress email, string password)
+        public async Task Register_ValidData_CreateValidPasswordHashAndSalt(
+            string username,
+            MailAddress email)
         {
             // Arrange
+            var password = "Password123!@#";
+            var passwordBytes = Encoding.UTF8.GetBytes(password);
+
             var request = new RegisterRequest
             {
                 Username = username,
@@ -100,26 +112,29 @@ namespace Authentication.UnitTests.Services
             var userInDb = await _context.Users.FirstAsync(u => u.Id == response.UserId);
 
             using var hmac = new HMACSHA512(userInDb.PasswordSalt);
-            var passwordBytes = Encoding.UTF8.GetBytes(password);
-            var computedHash = hmac.ComputeHash(passwordBytes);
+            
+            var computedPasswordHash = hmac.ComputeHash(passwordBytes);
 
-            var result = userInDb.PasswordHash.SequenceEqual(computedHash);
+            var isPasswordEquel = userInDb.PasswordHash.SequenceEqual(computedPasswordHash);
 
             // Assert
-            result.Should().BeTrue();
+            isPasswordEquel.Should().BeTrue();
         }
 
         [Theory]
         [InlineAutoData("")]
+        [InlineAutoData(" ")]
         [InlineAutoData(null)]
-        public async Task Register_NullEmptyUsername_ThrowsArgumentException(string username, MailAddress email, string password)
+        public async Task Register_NullEmptyUsername_ThrowsArgumentException(
+            string username,
+            MailAddress email)
         {
             // Arrange
             var request = new RegisterRequest
             {
                 Username = username,
                 Email = email.Address,
-                Password = password
+                Password = "Password123!@#"
             };
 
             // Act
@@ -131,15 +146,18 @@ namespace Authentication.UnitTests.Services
 
         [Theory]
         [InlineAutoData("")]
+        [InlineAutoData(" ")]
         [InlineAutoData(null)]
-        public async Task Register_NullEmptyEmail_ThrowsArgumentException(string email, string username, string password)
+        public async Task Register_NullEmptyEmail_ThrowsArgumentException(
+            string email,
+            string username)
         {
             // Arrange
             var request = new RegisterRequest
             {
                 Username = username,
                 Email = email,
-                Password = password
+                Password = "Password123!@#"
             };
 
             // Act
@@ -151,8 +169,12 @@ namespace Authentication.UnitTests.Services
 
         [Theory]
         [InlineAutoData("")]
+        [InlineAutoData(" ")]
         [InlineAutoData(null)]
-        public async Task Register_NullEmptyPassword_ThrowsArgumentException(string password, MailAddress email, string username)
+        public async Task Register_NullEmptyPassword_ThrowsArgumentException(
+            string password,
+            string username,
+            MailAddress email)
         {
             // Arrange
             var request = new RegisterRequest
@@ -184,14 +206,16 @@ namespace Authentication.UnitTests.Services
         [Theory]
         [InlineAutoData("user1")]
         [InlineAutoData("USER1")]
-        public async Task Register_UsernameAlreadyExists_ReturnsSuccessfulAndUserId(string username, MailAddress email, string password)
+        public async Task Register_UsernameAlreadyExists_ReturnsUsernameAlreadyExists(
+            string username,
+            MailAddress email)
         {
             // Arrange
             var request = new RegisterRequest
             {
                 Username = username,
                 Email = email.Address,
-                Password = password
+                Password = "Password123!@#"
             };
 
             // Act
@@ -203,16 +227,18 @@ namespace Authentication.UnitTests.Services
         }
 
         [Theory]
-        [InlineAutoData("user1@user.com")]
-        [InlineAutoData("USER1@USER.COM")]
-        public async Task Register_EmailAlreadyExists_ReturnsSuccessfulAndUserId(string email, string username, string password)
+        [InlineAutoData("User1@mail.com")]
+        [InlineAutoData("USER1@MAIL.COM")]
+        public async Task Register_EmailAlreadyExists_ReturnsEmailAlreadyExists(
+            string email,
+            string username)
         {
             // Arrange
             var request = new RegisterRequest
             {
                 Username = username,
                 Email = email,
-                Password = password
+                Password = "Password123!@#"
             };
 
             // Act
