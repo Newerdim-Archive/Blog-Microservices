@@ -46,7 +46,6 @@ namespace Authentication.API.Services
             var claims = new[]
             {
                 new Claim(CustomClaimTypes.UserId, userId.ToString()),
-                new Claim(CustomClaimTypes.Reason, TokenReasons.EmailConfirmation),
             };
 
             return CreateToken(claims, _tokenSettings.EmailConfirmationSecret, null);
@@ -83,19 +82,10 @@ namespace Authentication.API.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var validationParameters = GetValidationParameters(false, _tokenSettings.EmailConfirmationSecret);
 
-            string tokenReason;
-
             try
             {
-                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
-                tokenReason = principal.Claims.First(x => x.Type == CustomClaimTypes.Reason).Value;
-            }
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);            }
             catch
-            {
-                return Task.FromResult(false);
-            }
-
-            if (tokenReason is not TokenReasons.EmailConfirmation)
             {
                 return Task.FromResult(false);
             }
