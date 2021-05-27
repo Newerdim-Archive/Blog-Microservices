@@ -92,7 +92,7 @@ namespace Authentication.API.Controllers
 
             return Ok(new RegisterResponse
             {
-                Message = "Register successful",
+                Message = "Registered successfully",
                 UserId = registerResult.UserId
             });
         }
