@@ -102,11 +102,6 @@ namespace Authentication.API.Services
 
         public Task<string> CreateAccessTokenAsync(int userId)
         {
-            if (userId == 0)
-            {
-                throw new ArgumentException("User id cannot be 0 in access token", nameof(userId));
-            }
-
             var claims = new Claim[]
             {
                 new Claim(CustomClaimTypes.UserId, userId.ToString()),
@@ -123,11 +118,6 @@ namespace Authentication.API.Services
 
         public Task<string> CreateRefreshTokenAsync(int userId)
         {
-            if (userId == 0)
-            {
-                throw new ArgumentException("User id cannot be 0 in refresh token", nameof(userId));
-            }
-
             var claims = new Claim[]
             {
                 new Claim(CustomClaimTypes.UserId, userId.ToString()),

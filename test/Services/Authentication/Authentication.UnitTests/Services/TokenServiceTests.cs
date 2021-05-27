@@ -138,21 +138,6 @@ namespace Authentication.UnitTests.Services
                     It.Is<int>(x => x == 15))); // minutes
         }
 
-        [Fact]
-        public async Task CreateAccessTokenAsync_UserIdIs0_ThrowsArgumentException()
-        {
-            // Arrange
-            _dateProviderMock.Setup(x => x
-                .GetAfterUtcNow(It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(DateTimeOffset.UtcNow.AddMinutes(15));
-
-            // Act
-            Func<Task> act = async () => await _sut.CreateAccessTokenAsync(0);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>();
-        }
-
         #endregion CreateAccessTokenAsync
 
         #region CreateRefreshTokenAsync
@@ -190,22 +175,6 @@ namespace Authentication.UnitTests.Services
                 .GetAfterUtcNow(
                     It.Is<int>(x => x == 15), // days
                     It.Is<int>(x => x == 0))); // minutes
-        }
-
-        [Fact]
-        public async Task CreateRefreshTokenAsync_UserIdIs0_ThrowsArgumentException()
-        {
-            // Arrange
-
-            _dateProviderMock.Setup(x => x
-                .GetAfterUtcNow(It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(DateTimeOffset.UtcNow.AddDays(15));
-
-            // Act
-            Func<Task> act = async () => await _sut.CreateRefreshTokenAsync(0);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>();
         }
 
         #endregion CreateRefreshTokenAsync
