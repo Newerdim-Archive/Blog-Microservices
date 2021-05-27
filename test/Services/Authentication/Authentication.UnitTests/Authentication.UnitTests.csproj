@@ -29,4 +29,8 @@
     <ProjectReference Include="..\..\..\..\src\Services\Authentication\Authentication.API\Authentication.API.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Publishers\" />
+  </ItemGroup>
+
 </Project>

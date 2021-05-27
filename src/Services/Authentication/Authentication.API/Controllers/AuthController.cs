@@ -2,7 +2,6 @@
 using Authentication.API.Enums;
 using Authentication.API.Helpers;
 using Authentication.API.Models;
-using Authentication.API.Publishers;
 using Authentication.API.Responses;
 using Authentication.API.Services;
 using Microsoft.AspNetCore.Http;
@@ -19,21 +18,15 @@ namespace Authentication.API.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
-        private readonly IUserPublisher _userPublisher;
-        private readonly IEmailPublisher _emailPublisher;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(
             IAuthService authService,
             ITokenService tokenService,
-            IUserPublisher userPublisher,
-            IEmailPublisher emailPublisher,
             ILogger<AuthController> logger)
         {
             _authService = authService;
             _tokenService = tokenService;
-            _userPublisher = userPublisher;
-            _emailPublisher = emailPublisher;
             _logger = logger;
         }
 
@@ -72,23 +65,6 @@ namespace Authentication.API.Controllers
                         $" result message with name: " +
                         $"{nameof(registerResult.Message)}");
             }
-
-            var emailConfiramtionToken = await _tokenService
-                .CreateEmailConfirmationTokenAsync(registerResult.UserId);
-
-            await _emailPublisher.PublishEmailConfirmationAsync(new PublishEmailConfirmationRequest
-            {
-                TargetEmail = model.Email,
-                Token = emailConfiramtionToken,
-                EmailConfirmationUrl = model.EmailConfirmationUrl
-            });
-
-            await _userPublisher.PublishNewUserAsync(new PublishNewUserRequest
-            {
-                UserId = registerResult.UserId,
-                Username = model.Username,
-                Email = model.Email
-            });
 
             return Ok(new RegisterResponse
             {

@@ -1,10 +1,7 @@
 ﻿using Authentication.API.Data;
 using Authentication.API.Helpers;
 using Authentication.API.Providers;
-using Authentication.API.Publishers;
 using Authentication.API.Services;
-using EmailSender.API.Helper;
-using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,31 +31,6 @@ namespace Authentication.API.Extensions
             services.AddTransient<IDateProvider, DateProvider>();
             services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<ITokenService, TokenService>();
-
-            services.AddTransient<IEmailPublisher, EmailPublisher>();
-            services.AddTransient<IUserPublisher, UserPublisher>();
-        }
-
-        public static void AddCustomMassTransit(this IServiceCollection services, IConfigurationSection section)
-        {
-            var rabbitMqSettings = new RabbitMqSettings();
-            section.Bind(rabbitMqSettings);
-
-            services.AddMassTransit(x =>
-            {
-                x.UsingRabbitMq((context, cfg) =>
-                {
-                    cfg.Host(rabbitMqSettings.Uri, x =>
-                    {
-                        x.Username(rabbitMqSettings.Username);
-                        x.Password(rabbitMqSettings.Password);
-                    });
-
-                    cfg.ConfigureEndpoints(context);
-                });
-            });
-
-            services.AddMassTransitHostedService(true);
         }
 
         public static void AddCustomSettings(this IServiceCollection services, IConfiguration configuration)

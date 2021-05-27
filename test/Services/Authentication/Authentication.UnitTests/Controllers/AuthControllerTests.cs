@@ -2,7 +2,6 @@
 using Authentication.API.Dtos;
 using Authentication.API.Enums;
 using Authentication.API.Models;
-using Authentication.API.Publishers;
 using Authentication.API.Responses;
 using Authentication.API.Services;
 using AutoFixture;
@@ -21,8 +20,6 @@ namespace Authentication.UnitTests.Controllers
     {
         private readonly Mock<IAuthService> _authServiceMock = new();
         private readonly Mock<ITokenService> _tokenServiceMock = new();
-        private readonly Mock<IUserPublisher> _userPublisherMock = new();
-        private readonly Mock<IEmailPublisher> _emailPublisherMock = new();
         private readonly Mock<ILogger<AuthController>> _loggerMock = new();
 
         private readonly Mock<HttpContext> _httpContextMock = new();
@@ -36,8 +33,6 @@ namespace Authentication.UnitTests.Controllers
             var controller = new AuthController(
                 _authServiceMock.Object,
                 _tokenServiceMock.Object,
-                _userPublisherMock.Object,
-                _emailPublisherMock.Object,
                 _loggerMock.Object);
 
             controller.ControllerContext = CreateControllerContext();
@@ -50,8 +45,6 @@ namespace Authentication.UnitTests.Controllers
             var controller = new AuthController(
                 _authServiceMock.Object,
                 _tokenServiceMock.Object,
-                _userPublisherMock.Object,
-                _emailPublisherMock.Object,
                 _loggerMock.Object);
 
             controller.ControllerContext = CreateControllerContext();
@@ -100,71 +93,6 @@ namespace Authentication.UnitTests.Controllers
             response.StatusCode.Should().Be(StatusCodes.Status200OK);
             value.UserId.Should().BeGreaterThan(0);
             value.Message.Should().NotBeNullOrWhiteSpace();
-        }
-
-        [Fact]
-        public async Task Register_ValidModel_PublishNewUserEvent()
-        {
-            // Arrange
-            var fixture = new Fixture();
-            var model = fixture.Create<RegisterModel>();
-
-            _authServiceMock.Setup(x => x
-                .RegisterAsync(It.IsAny<RegisterRequest>()))
-                    .ReturnsAsync(new RegisterResult
-                    {
-                        Message = RegisterResultMessage.Successful,
-                        UserId = 1
-                    });
-
-            var sut = CreateController();
-
-            // Act
-            var response = await sut.Register(model) as OkObjectResult;
-            var value = response.Value as RegisterResponse;
-
-            // Assert
-            _userPublisherMock.Verify(x => x
-                .PublishNewUserAsync(
-                    It.Is<PublishNewUserRequest>(x =>
-                        x.UserId == 1 &&
-                        x.Username == model.Username &&
-                        x.Email == model.Email)));
-        }
-
-        [Fact]
-        public async Task Register_ValidModel_PublishSendEmailEvent()
-        {
-            // Arrange
-            var token = "validToken";
-
-            var fixture = new Fixture();
-            var model = fixture.Create<RegisterModel>();
-
-            _authServiceMock.Setup(x => x
-                .RegisterAsync(It.IsAny<RegisterRequest>()))
-                    .ReturnsAsync(new RegisterResult
-                    {
-                        Message = RegisterResultMessage.Successful,
-                        UserId = 1
-                    });
-
-            _tokenServiceMock.Setup(x => x
-                .CreateEmailConfirmationTokenAsync(It.IsAny<int>()))
-                    .ReturnsAsync(token);
-
-            var sut = CreateController();
-
-            // Act
-            var response = await sut.Register(model) as OkObjectResult;
-            var value = response.Value as RegisterResponse;
-
-            // Assert
-            _emailPublisherMock.Verify(x => x
-                .PublishEmailConfirmationAsync(
-                    It.Is<PublishEmailConfirmationRequest>(x =>
-                        x.Token == token &&
-                        x.TargetEmail == model.Email)));
         }
 
         [Fact]

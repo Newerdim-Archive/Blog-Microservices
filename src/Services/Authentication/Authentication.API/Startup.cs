@@ -36,8 +36,6 @@ namespace Authentication.API
 
             services.AddCustomServices();
 
-            services.AddCustomMassTransit(Configuration.GetSection("RabbitMqSettings"));
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Authentication.API", Version = "v1" });
