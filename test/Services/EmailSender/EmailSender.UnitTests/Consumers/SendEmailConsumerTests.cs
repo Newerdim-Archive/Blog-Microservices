@@ -43,7 +43,7 @@ namespace EmailSender.UnitTests.Consummers
             // Act
             await _harness.InputQueueSendEndpoint.Send(command);
 
-            var isConsumed = await IsConsumed<SendEmailCommand>();
+            var isConsumed = await IsConsumedAsync<SendEmailCommand>();
 
             // Assert
             isConsumed.Should().BeTrue();
@@ -70,8 +70,8 @@ namespace EmailSender.UnitTests.Consummers
             // Act
             await _harness.InputQueueSendEndpoint.Send(command);
 
-            var isConsumed = await IsConsumed<SendEmailCommand>();
-            var isAnyPublishedFault = await IsAnyPublishedFault<SendEmailCommand>();
+            var isConsumed = await IsConsumedAsync<SendEmailCommand>();
+            var isAnyPublishedFault = await IsAnyPublishedFaultAsync<SendEmailCommand>();
 
             // Assert
             isConsumed.Should().BeTrue();
@@ -97,8 +97,8 @@ namespace EmailSender.UnitTests.Consummers
             // Act
             await _harness.InputQueueSendEndpoint.Send(command);
 
-            var isConsumed = await IsConsumed<SendEmailCommand>();
-            var isAnyPublishedFault = await IsAnyPublishedFault<SendEmailCommand>();
+            var isConsumed = await IsConsumedAsync<SendEmailCommand>();
+            var isAnyPublishedFault = await IsAnyPublishedFaultAsync<SendEmailCommand>();
 
             // Assert
             isConsumed.Should().BeTrue();
@@ -120,8 +120,8 @@ namespace EmailSender.UnitTests.Consummers
             // Act
             await _harness.InputQueueSendEndpoint.Send(command);
 
-            var isConsumed = await IsConsumed<SendEmailCommand>();
-            var isAnyPublishedFault = await IsAnyPublishedFault<SendEmailCommand>();
+            var isConsumed = await IsConsumedAsync<SendEmailCommand>();
+            var isAnyPublishedFault = await IsAnyPublishedFaultAsync<SendEmailCommand>();
 
             // Assert
             isConsumed.Should().BeTrue();
@@ -143,7 +143,7 @@ namespace EmailSender.UnitTests.Consummers
         /// </summary>
         /// <typeparam name="TMessage">Message type</typeparam>
         /// <returns>True if consumed, otherwise false</returns>
-        private async Task<bool> IsConsumed<TMessage>() where TMessage : class
+        private async Task<bool> IsConsumedAsync<TMessage>() where TMessage : class
         {
             var harnessConsumed = await _harness.Consumed.Any<TMessage>();
             var consumerConsumed = await _consumerHarness.Consumed.Any<TMessage>();
@@ -156,7 +156,7 @@ namespace EmailSender.UnitTests.Consummers
         /// </summary>
         /// <typeparam name="TMessage"></typeparam>
         /// <returns>True if published fault, otherwise false</returns>
-        private async Task<bool> IsAnyPublishedFault<TMessage>() where TMessage : class
+        private async Task<bool> IsAnyPublishedFaultAsync<TMessage>() where TMessage : class
         {
             return await _harness.Published.Any<Fault<SendEmailCommand>>();
         }
