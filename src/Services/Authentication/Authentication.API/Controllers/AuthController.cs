@@ -61,11 +61,16 @@ namespace Authentication.API.Controllers
 
             switch (registerResult.Message)
             {
+                case RegisterResultMessage.Successful:
+                    break;
                 case RegisterResultMessage.EmailAlreadyExists:
                     return Unauthorized("User with this email already exists");
-
                 case RegisterResultMessage.UsernameAlreadyExists:
                     return Unauthorized("User with this username already exists");
+                default:
+                    throw new NotImplementedException($"Register does not implement" +
+                        $" result message with name: " +
+                        $"{nameof(registerResult.Message)}");
             }
 
             var emailConfiramtionToken = await _tokenService

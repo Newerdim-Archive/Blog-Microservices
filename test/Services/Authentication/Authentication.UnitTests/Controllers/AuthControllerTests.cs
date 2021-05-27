@@ -217,6 +217,27 @@ namespace Authentication.UnitTests.Controllers
             response.Value.Should().NotBeNull();
         }
 
+        [Fact]
+        public async Task Register_NotImplementedLoginResultMessage_ReturnsInternalServerError()
+        {
+            // Arrange
+            var model = new RegisterModel();
+
+            _authServiceMock.Setup(x => x
+                .RegisterAsync(It.IsAny<RegisterRequest>()))
+                    .ReturnsAsync(new RegisterResult
+                    {
+                        Message = (RegisterResultMessage)99,
+                        UserId = 0
+                    });
+
+            // Act
+            Func<Task> act = async () => await _sut.Register(model);
+
+            // Assert
+            await act.Should().ThrowAsync<NotImplementedException>();
+        }
+
         #endregion Register
 
         #region Login
