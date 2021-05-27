@@ -26,9 +26,9 @@ namespace Authentication.UnitTests.Services
 
         public AuthServiceTests(AuthSeedDataFixture fixture)
         {
-            _sut = new AuthService(_context, _dateProviderMock.Object);
             _context = fixture.Context;
             _dateProviderMock = new();
+            _sut = new AuthService(_context, _dateProviderMock.Object);
         }
 
         #region Register
