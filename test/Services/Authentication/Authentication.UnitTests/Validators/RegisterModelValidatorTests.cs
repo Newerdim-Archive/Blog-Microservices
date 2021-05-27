@@ -19,7 +19,6 @@ namespace Authentication.UnitTests.Validators
                 Username = "User1234",
                 Email = "User1234@mail.com",
                 Password = "Password123!",
-                EmailConfirmationUrl = "http://www.website.com"
             };
 
             // Act
@@ -196,42 +195,5 @@ namespace Authentication.UnitTests.Validators
         }
 
         #endregion ValidatePassword
-
-        #region ValidateEmailConfirmationUrl
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void ValidateEmailConfirmationUrl_NullOrEmpty_ReturnsFalseWithMessage(string emailConfirmationUrl)
-        {
-            // Arrange
-            var model = new RegisterModel { EmailConfirmationUrl = emailConfirmationUrl };
-            model.EmailConfirmationUrl = emailConfirmationUrl;
-
-            // Act
-            var result = _validator.TestValidate(model);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(x => x.EmailConfirmationUrl);
-        }
-
-        [Theory]
-        [InlineData("test")]
-        [InlineData("test.")]
-        public void ValidateEmailConfirmationUrl_Invalid_ReturnsFalseWithMessage(string emailConfirmationUrl)
-        {
-            // Arrange
-            var model = new RegisterModel { EmailConfirmationUrl = emailConfirmationUrl };
-            model.EmailConfirmationUrl = emailConfirmationUrl;
-
-            // Act
-            var result = _validator.TestValidate(model);
-
-            // Assert
-            result.ShouldHaveValidationErrorFor(x => x.EmailConfirmationUrl);
-        }
-
-        #endregion ValidateEmailConfirmationUrl
     }
 }

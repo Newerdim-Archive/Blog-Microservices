@@ -19,10 +19,6 @@ namespace Authentication.API.Validators
             RuleFor(x => x.Password)
                 .NotEmpty()
                 .Password();
-
-            RuleFor(x => x.EmailConfirmationUrl)
-                .NotEmpty()
-                .Url();
         }
     }
 }
