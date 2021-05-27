@@ -3,14 +3,16 @@ using System;
 using Authentication.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Authentication.API.Migrations
 {
     [DbContext(typeof(AuthDataContext))]
-    partial class AuthDataContextModelSnapshot : ModelSnapshot
+    [Migration("20210527211821_RemoveConfirmedEmailFromUser")]
+    partial class RemoveConfirmedEmailFromUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

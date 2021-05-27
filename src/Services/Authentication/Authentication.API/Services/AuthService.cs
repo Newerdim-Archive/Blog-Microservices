@@ -80,7 +80,6 @@ namespace Authentication.API.Services
                 Email = request.Email,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                ConfirmedEmail = false,
                 Created = _dateProvider.GetUtcNow(),
                 LastChange = _dateProvider.GetUtcNow(),
             };

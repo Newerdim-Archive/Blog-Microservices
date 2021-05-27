@@ -84,8 +84,6 @@ namespace Authentication.UnitTests.Services
             userInDb.PasswordHash.Should().NotBeEmpty();
             userInDb.PasswordSalt.Should().NotBeEmpty();
 
-            userInDb.ConfirmedEmail.Should().BeFalse();
-
             userInDb.Created.Should().Be(now);
             userInDb.LastChange.Should().Be(now);
         }

@@ -34,7 +34,6 @@ namespace Authentication.IntergrationTests.Controllers
                 Username = "User1234",
                 Email = "User1234@mail.com",
                 Password = "Password123!",
-                EmailConfirmationUrl = "http://www.website.com"
             };
 
             // Act
@@ -59,7 +58,6 @@ namespace Authentication.IntergrationTests.Controllers
                 Username = null,
                 Password = null,
                 Email = null,
-                EmailConfirmationUrl = null
             };
 
             // Act
@@ -83,7 +81,6 @@ namespace Authentication.IntergrationTests.Controllers
                 Username = "User1234",
                 Email = "User1@mail.com",
                 Password = "Password123!",
-                EmailConfirmationUrl = "http://www.website.com"
             };
 
             // Act
@@ -107,7 +104,6 @@ namespace Authentication.IntergrationTests.Controllers
                 Username = "User1",
                 Email = "User1345@mail.com",
                 Password = "Password123!",
-                EmailConfirmationUrl = "http://www.website.com"
             };
 
             // Act
