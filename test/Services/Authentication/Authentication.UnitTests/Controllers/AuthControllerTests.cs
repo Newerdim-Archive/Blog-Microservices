@@ -4,7 +4,6 @@ using Authentication.API.Enums;
 using Authentication.API.Models;
 using Authentication.API.Responses;
 using Authentication.API.Services;
-using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -72,8 +71,7 @@ namespace Authentication.UnitTests.Controllers
         public async Task Register_ValidModel_ReturnsUserIdAndMessage()
         {
             // Arrange
-            var fixture = new Fixture();
-            var model = fixture.Create<RegisterModel>();
+            var model = new RegisterModel();
 
             _authServiceMock.Setup(x => x
                 .RegisterAsync(It.IsAny<RegisterRequest>()))
@@ -99,8 +97,7 @@ namespace Authentication.UnitTests.Controllers
         public async Task Register_UsernameAlreadyExists_ReturnsUnauthroize()
         {
             // Arrange
-            var fixture = new Fixture();
-            var model = fixture.Create<RegisterModel>();
+            var model = new RegisterModel();
 
             _authServiceMock.Setup(x => x
                 .RegisterAsync(It.IsAny<RegisterRequest>()))
@@ -124,8 +121,7 @@ namespace Authentication.UnitTests.Controllers
         public async Task Register_EmailAlreadyExists_ReturnsUnauthroize()
         {
             // Arrange
-            var fixture = new Fixture();
-            var model = fixture.Create<RegisterModel>();
+            var model = new RegisterModel();
 
             _authServiceMock.Setup(x => x
                 .RegisterAsync(It.IsAny<RegisterRequest>()))
