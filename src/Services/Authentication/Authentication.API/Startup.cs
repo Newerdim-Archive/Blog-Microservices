@@ -32,8 +32,6 @@ namespace Authentication.API
             services.AddControllers()
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
-            services.AddAutoMapper(typeof(Startup));
-
             services.AddCustomSettings(Configuration);
 
             services.AddCustomServices();
