@@ -21,7 +21,6 @@ namespace EmailSender.UnitTests.Consummers
 
         private readonly InMemoryTestHarness _harness = new();
         private readonly ConsumerTestHarness<SendEmailConsumer> _consumerHarness;
-        private readonly IRequestClient<SendEmailCommand> _client;
 
         public SendEmailConsumerTests()
         {
@@ -29,12 +28,10 @@ namespace EmailSender.UnitTests.Consummers
                 new SendEmailConsumer(_emailSenderServiceMock.Object, _logger.Object));
 
             _harness.Start().Wait();
-
-            _client = _harness.ConnectRequestClient<SendEmailCommand>().GetAwaiter().GetResult();
         }
 
         [Fact]
-        public async Task Consume_ValidData_NoExpections()
+        public async Task Consume_ValidData_EmailSended()
         {
             // Arrange
             var command = new SendEmailCommand
@@ -44,12 +41,16 @@ namespace EmailSender.UnitTests.Consummers
             };
 
             // Act
-            await _client.GetResponse<ConsumerBaseResult>(command);
+            await _harness.InputQueueSendEndpoint.Send(command);
+
+            var isConsumed = await IsConsumed<SendEmailCommand>();
 
             // Assert
-            (await IsConsumed()).Should().BeTrue();
+            isConsumed.Should().BeTrue();
 
-            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Exactly(2));
+            _emailSenderServiceMock.Verify(x => x
+                .SendAsync(It.IsAny<SendRequest>()), 
+                Times.Exactly(2));
         }
 
         [Theory]
@@ -57,22 +58,24 @@ namespace EmailSender.UnitTests.Consummers
         [InlineData("")]
         [InlineData("invalid")]
         [InlineData("invalid@")]
-        public async Task Consume_InvalidFromAddress_NotSendedEmail(string from)
+        public async Task Consume_InvalidFromAddress_NotSendedAnyEmail(string from)
         {
             // Arrange
-            var message = new SendEmailCommand
+            var command = new SendEmailCommand
             {
                 From = from,
                 To = new string[] { "test@gmail.com" },
             };
 
             // Act
-            Func<Task> act = () => _client.GetResponse<ConsumerBaseResult>(message);
+            await _harness.InputQueueSendEndpoint.Send(command);
+
+            var isConsumed = await IsConsumed<SendEmailCommand>();
+            var isAnyPublishedFault = await IsAnyPublishedFault<SendEmailCommand>();
 
             // Assert
-            await act.Should().ThrowAsync<RequestFaultException>();
-
-            (await IsConsumed()).Should().BeTrue();
+            isConsumed.Should().BeTrue();
+            isAnyPublishedFault.Should().BeTrue();
 
             _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Never);
         }
@@ -82,45 +85,51 @@ namespace EmailSender.UnitTests.Consummers
         [InlineData("")]
         [InlineData("invalid")]
         [InlineData("invalid@")]
-        public async Task Consume_InvalidToAddress_NotSendedEmail(string to)
+        public async Task Consume_InvalidToAddress_NotSendedAnyEmail(string to)
         {
             // Arrange
-            var message = new SendEmailCommand
+            var command = new SendEmailCommand
             {
                 From = "test@gmail.com",
                 To = new string[] { to },
             };
 
             // Act
-            Func<Task> act = () => _client.GetResponse<ConsumerBaseResult>(message);
+            await _harness.InputQueueSendEndpoint.Send(command);
+
+            var isConsumed = await IsConsumed<SendEmailCommand>();
+            var isAnyPublishedFault = await IsAnyPublishedFault<SendEmailCommand>();
 
             // Assert
-            await act.Should().ThrowAsync<RequestFaultException>();
-
-            (await IsConsumed()).Should().BeTrue();
+            isConsumed.Should().BeTrue();
+            isAnyPublishedFault.Should().BeTrue();
 
             _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Never);
         }
 
         [Fact]
-        public async Task Consume_NullTo_NotSendedEmail()
+        public async Task Consume_NullTo_NotSendedAnyEmail()
         {
             // Arrange
-            var message = new SendEmailCommand
+            var command = new SendEmailCommand
             {
                 From = "test@gmail.com",
                 To = null,
             };
 
             // Act
-            Func<Task> act = () => _client.GetResponse<ConsumerBaseResult>(message);
+            await _harness.InputQueueSendEndpoint.Send(command);
+
+            var isConsumed = await IsConsumed<SendEmailCommand>();
+            var isAnyPublishedFault = await IsAnyPublishedFault<SendEmailCommand>();
 
             // Assert
-            await act.Should().ThrowAsync<RequestFaultException>();
+            isConsumed.Should().BeTrue();
+            isAnyPublishedFault.Should().BeTrue();
 
-            (await IsConsumed()).Should().BeTrue();
-
-            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Never);
+            _emailSenderServiceMock.Verify(x => x
+                .SendAsync(It.IsAny<SendRequest>()), 
+                Times.Never);
         }
 
         public void Dispose()
@@ -129,12 +138,27 @@ namespace EmailSender.UnitTests.Consummers
             GC.SuppressFinalize(this);
         }
 
-        private async Task<bool> IsConsumed()
+        /// <summary>
+        /// Check if harness and consumer harness consumed SendEmailCommand
+        /// </summary>
+        /// <typeparam name="TMessage">Message type</typeparam>
+        /// <returns>True if consumed, otherwise false</returns>
+        private async Task<bool> IsConsumed<TMessage>() where TMessage : class
         {
-            var harnessConsumed = await _harness.Consumed.Any<SendEmailCommand>();
-            var consumerConsumed = await _consumerHarness.Consumed.Any<SendEmailCommand>();
+            var harnessConsumed = await _harness.Consumed.Any<TMessage>();
+            var consumerConsumed = await _consumerHarness.Consumed.Any<TMessage>();
 
             return harnessConsumed && consumerConsumed;
+        }
+
+        /// <summary>
+        /// Check if consumer published fault of type <typeparamref name="TMessage"/>
+        /// </summary>
+        /// <typeparam name="TMessage"></typeparam>
+        /// <returns>True if published fault, otherwise false</returns>
+        private async Task<bool> IsAnyPublishedFault<TMessage>() where TMessage : class
+        {
+            return await _harness.Published.Any<Fault<SendEmailCommand>>();
         }
     }
 }

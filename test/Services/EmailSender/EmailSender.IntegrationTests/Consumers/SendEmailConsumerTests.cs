@@ -32,8 +32,6 @@ namespace EmailSender.IntegrationTests.Consumers
             _consumerHarness = _harness.Consumer(() => sendEmailConsumer);
 
             _harness.Start().Wait();
-
-            _client = _harness.ConnectRequestClient<SendEmailCommand>().GetAwaiter().GetResult();
         }
 
         [Fact]

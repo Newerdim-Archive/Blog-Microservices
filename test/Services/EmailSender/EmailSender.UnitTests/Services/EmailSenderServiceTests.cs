@@ -13,32 +13,31 @@ namespace EmailSender.UnitTests.Services
 {
     public class EmailSenderServiceTests
     {
-        private readonly Mock<ISmtpClientWrapper> _client = new();
+        private readonly Mock<ISmtpClientWrapper> _smtpClient = new();
+        private readonly IEmailSenderService _sut;
 
-        private IEmailSenderService CreateService()
+        public EmailSenderServiceTests()
         {
-            return new EmailSenderService(_client.Object);
+            _sut = new EmailSenderService(_smtpClient.Object);
         }
 
         [Fact]
         public async Task SendAsync_ValidRequest_NoExceptions()
         {
             // Arrange
-            var sut = CreateService();
-
-            var message = new SendRequest
+            var request = new SendRequest
             {
                 To = "user1@mail.com",
                 From = "company@mail.com"
             };
 
             // Act
-            Func<Task> act = async () => await sut.SendAsync(message);
+            Func<Task> act = async () => await _sut.SendAsync(request);
 
             // Assert
             await act.Should().NotThrowAsync();
 
-            _client.Verify(x =>
+            _smtpClient.Verify(x =>
                 x.SendMailAsync(It.IsAny<MailMessage>()),
                 Times.Once);
         }
@@ -47,15 +46,13 @@ namespace EmailSender.UnitTests.Services
         public async Task SendAsync_NullRequest_ThrowsArgumentNullException()
         {
             // Arrange
-            var sut = CreateService();
-
             // Act
-            Func<Task> act = async () => await sut.SendAsync(null);
+            Func<Task> act = async () => await _sut.SendAsync(null);
 
             // Assert
             await act.Should().ThrowAsync<ArgumentNullException>();
 
-            _client.Verify(x =>
+            _smtpClient.Verify(x =>
                 x.SendMailAsync(It.IsAny<MailMessage>()),
                 Times.Never);
         }
@@ -64,19 +61,19 @@ namespace EmailSender.UnitTests.Services
         public async Task SendAsync_InvalidRequest_ThrowsFluentValidationException()
         {
             // Arrange
-            var sut = CreateService();
-
-            // Act
-            Func<Task> act = async () => await sut.SendAsync(new SendRequest
+            var request = new SendRequest
             {
                 To = null,
                 From = null
-            });
+            };
+
+            // Act
+            Func<Task> act = async () => await _sut.SendAsync(request);
 
             // Assert
             await act.Should().ThrowAsync<FluentValidationException>();
 
-            _client.Verify(x =>
+            _smtpClient.Verify(x =>
                 x.SendMailAsync(It.IsAny<MailMessage>()),
                 Times.Never);
         }
