@@ -39,18 +39,6 @@ namespace Authentication.UnitTests.Controllers
             _sut = controller;
         }
 
-        private AuthController CreateController()
-        {
-            var controller = new AuthController(
-                _authServiceMock.Object,
-                _tokenServiceMock.Object,
-                _loggerMock.Object);
-
-            controller.ControllerContext = CreateControllerContext();
-
-            return controller;
-        }
-
         private ControllerContext CreateControllerContext()
         {
             _httpResponseMock.Setup(x => x.Cookies)
@@ -81,10 +69,8 @@ namespace Authentication.UnitTests.Controllers
                         UserId = 1
                     });
 
-            var sut = CreateController();
-
             // Act
-            var response = await sut.Register(model) as OkObjectResult;
+            var response = await _sut.Register(model) as OkObjectResult;
             var value = response.Value as RegisterResponse;
 
             // Assert
@@ -107,10 +93,8 @@ namespace Authentication.UnitTests.Controllers
                         UserId = 0
                     });
 
-            var sut = CreateController();
-
             // Act
-            var response = await sut.Register(model) as UnauthorizedObjectResult;
+            var response = await _sut.Register(model) as UnauthorizedObjectResult;
 
             // Assert
             response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);
@@ -131,10 +115,8 @@ namespace Authentication.UnitTests.Controllers
                         UserId = 0
                     });
 
-            var sut = CreateController();
-
             // Act
-            var response = await sut.Register(model) as UnauthorizedObjectResult;
+            var response = await _sut.Register(model) as UnauthorizedObjectResult;
 
             // Assert
             response.StatusCode.Should().Be(StatusCodes.Status401Unauthorized);

@@ -22,16 +22,13 @@ namespace Authentication.UnitTests.Services
     {
         private readonly AuthDataContext _context;
         private readonly Mock<IDateProvider> _dateProviderMock;
+        private readonly IAuthService _sut;
 
         public AuthServiceTests(AuthSeedDataFixture fixture)
         {
+            _sut = new AuthService(_context, _dateProviderMock.Object);
             _context = fixture.Context;
             _dateProviderMock = new();
-        }
-
-        private IAuthService CreateService()
-        {
-            return new AuthService(_context, _dateProviderMock.Object);
         }
 
         #region Register
@@ -40,7 +37,6 @@ namespace Authentication.UnitTests.Services
         public async Task Register_ValidData_ReturnsSuccessfulAndUserId(string username, MailAddress email, string password)
         {
             // Arrange
-            var sut = CreateService();
             var request = new RegisterRequest
             {
                 Username = username,
@@ -49,7 +45,7 @@ namespace Authentication.UnitTests.Services
             };
 
             // Act
-            var response = await sut.RegisterAsync(request);
+            var response = await _sut.RegisterAsync(request);
 
             // Assert
             response.UserId.Should().BeGreaterThan(0);
@@ -61,9 +57,9 @@ namespace Authentication.UnitTests.Services
         {
             // Arrange
             var now = DateTimeOffset.UtcNow;
+
             _dateProviderMock.Setup(x => x.GetUtcNow()).Returns(now);
 
-            var sut = CreateService();
             var request = new RegisterRequest
             {
                 Username = username,
@@ -72,7 +68,7 @@ namespace Authentication.UnitTests.Services
             };
 
             // Act
-            var response = await sut.RegisterAsync(request);
+            var response = await _sut.RegisterAsync(request);
 
             var userInDb = await _context.Users.FirstAsync(u => u.Id == response.UserId);
 
@@ -91,7 +87,6 @@ namespace Authentication.UnitTests.Services
         public async Task Register_ValidData_CreateValidPasswordHashAndSalt(string username, MailAddress email, string password)
         {
             // Arrange
-            var sut = CreateService();
             var request = new RegisterRequest
             {
                 Username = username,
@@ -100,7 +95,7 @@ namespace Authentication.UnitTests.Services
             };
 
             // Act
-            var response = await sut.RegisterAsync(request);
+            var response = await _sut.RegisterAsync(request);
 
             var userInDb = await _context.Users.FirstAsync(u => u.Id == response.UserId);
 
@@ -120,7 +115,6 @@ namespace Authentication.UnitTests.Services
         public async Task Register_NullEmptyUsername_ThrowsArgumentException(string username, MailAddress email, string password)
         {
             // Arrange
-            var sut = CreateService();
             var request = new RegisterRequest
             {
                 Username = username,
@@ -129,7 +123,7 @@ namespace Authentication.UnitTests.Services
             };
 
             // Act
-            Func<Task> act = async () => await sut.RegisterAsync(request);
+            Func<Task> act = async () => await _sut.RegisterAsync(request);
 
             // Assert
             await act.Should().ThrowAsync<ArgumentException>();
@@ -141,7 +135,6 @@ namespace Authentication.UnitTests.Services
         public async Task Register_NullEmptyEmail_ThrowsArgumentException(string email, string username, string password)
         {
             // Arrange
-            var sut = CreateService();
             var request = new RegisterRequest
             {
                 Username = username,
@@ -150,7 +143,7 @@ namespace Authentication.UnitTests.Services
             };
 
             // Act
-            Func<Task> act = async () => await sut.RegisterAsync(request);
+            Func<Task> act = async () => await _sut.RegisterAsync(request);
 
             // Assert
             await act.Should().ThrowAsync<ArgumentException>();
@@ -162,7 +155,6 @@ namespace Authentication.UnitTests.Services
         public async Task Register_NullEmptyPassword_ThrowsArgumentException(string password, MailAddress email, string username)
         {
             // Arrange
-            var sut = CreateService();
             var request = new RegisterRequest
             {
                 Username = username,
@@ -171,7 +163,7 @@ namespace Authentication.UnitTests.Services
             };
 
             // Act
-            Func<Task> act = async () => await sut.RegisterAsync(request);
+            Func<Task> act = async () => await _sut.RegisterAsync(request);
 
             // Assert
             await act.Should().ThrowAsync<ArgumentException>();
@@ -181,10 +173,9 @@ namespace Authentication.UnitTests.Services
         public async Task Register_NullRequest_ThrowsArgumentNullException()
         {
             // Arrange
-            var sut = CreateService();
 
             // Act
-            Func<Task> act = async () => await sut.RegisterAsync(null);
+            Func<Task> act = async () => await _sut.RegisterAsync(null);
 
             // Assert
             await act.Should().ThrowAsync<ArgumentNullException>();
@@ -196,7 +187,6 @@ namespace Authentication.UnitTests.Services
         public async Task Register_UsernameAlreadyExists_ReturnsSuccessfulAndUserId(string username, MailAddress email, string password)
         {
             // Arrange
-            var sut = CreateService();
             var request = new RegisterRequest
             {
                 Username = username,
@@ -205,7 +195,7 @@ namespace Authentication.UnitTests.Services
             };
 
             // Act
-            var response = await sut.RegisterAsync(request);
+            var response = await _sut.RegisterAsync(request);
 
             // Assert
             response.UserId.Should().Be(0);
@@ -218,7 +208,6 @@ namespace Authentication.UnitTests.Services
         public async Task Register_EmailAlreadyExists_ReturnsSuccessfulAndUserId(string email, string username, string password)
         {
             // Arrange
-            var sut = CreateService();
             var request = new RegisterRequest
             {
                 Username = username,
@@ -227,7 +216,7 @@ namespace Authentication.UnitTests.Services
             };
 
             // Act
-            var response = await sut.RegisterAsync(request);
+            var response = await _sut.RegisterAsync(request);
 
             // Assert
             response.UserId.Should().Be(0);
@@ -248,10 +237,8 @@ namespace Authentication.UnitTests.Services
                 Password = "User1!@#"
             };
 
-            var sut = CreateService();
-
             // Act
-            var result = await sut.LoginAsync(request);
+            var result = await _sut.LoginAsync(request);
 
             // Assert
             result.Message.Should().Be(LoginResultMessage.Successful);
@@ -269,10 +256,8 @@ namespace Authentication.UnitTests.Services
                 Password = password
             };
 
-            var sut = CreateService();
-
             // Act
-            var result = await sut.LoginAsync(request);
+            var result = await _sut.LoginAsync(request);
 
             // Assert
             result.UserId.Should().Be(expectedUserId);
@@ -293,10 +278,8 @@ namespace Authentication.UnitTests.Services
                 Password = password
             };
 
-            var sut = CreateService();
-
             // Act
-            var result = await sut.LoginAsync(request);
+            var result = await _sut.LoginAsync(request);
 
             // Assert
             result.UserId.Should().Be(expectedUserId);
@@ -312,10 +295,8 @@ namespace Authentication.UnitTests.Services
                 Password = "notMatching"
             };
 
-            var sut = CreateService();
-
             // Act
-            var result = await sut.LoginAsync(request);
+            var result = await _sut.LoginAsync(request);
 
             // Assert
             result.UserId.Should().Be(0);
@@ -332,10 +313,8 @@ namespace Authentication.UnitTests.Services
                 Password = "Password123!"
             };
 
-            var sut = CreateService();
-
             // Act
-            var result = await sut.LoginAsync(request);
+            var result = await _sut.LoginAsync(request);
 
             // Assert
             result.UserId.Should().Be(0);

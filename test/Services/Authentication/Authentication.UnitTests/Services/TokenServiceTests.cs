@@ -32,13 +32,6 @@ namespace Authentication.UnitTests.Services
                 _tokenSettingsOptionsMock.Object);
         }
 
-        private ITokenService CreateService()
-        {
-            return new TokenService(
-                _dateProviderMock.Object,
-                _tokenSettingsOptionsMock.Object);
-        }
-
         #region GetUserIdFromToken
 
         [Fact]
@@ -47,10 +40,8 @@ namespace Authentication.UnitTests.Services
             // Arrange
             var validToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIxIiwicmVzIjoiZW1jIiwibmJmIjoxNjE5MjgzMzE2LCJleHAiOjE2MTkyODY5MTYsImlhdCI6MTYxOTI4MzMxNiwiaXNzIjoiQXV0aFNlcnZpY2UiLCJhdWQiOiJBdXRoU2VydmljZSJ9.M4FAkPYmMIGFEyjDUH6_Uuf36u5CV1jNEDHhW67MEUy1b-m1T0Nyj6ewLn27ASjMk_KiYU3-BoXmtL56SIenmw";
 
-            var sut = CreateService();
-
             // Act
-            var userId = sut.GetUserIdFromToken(validToken);
+            var userId = _sut.GetUserIdFromToken(validToken);
 
             // Assert
             userId.Should().Be(1);
@@ -62,10 +53,8 @@ namespace Authentication.UnitTests.Services
             // Arrange
             var validToken = "invalid";
 
-            var sut = CreateService();
-
             // Act
-            var userId = sut.GetUserIdFromToken(validToken);
+            var userId = _sut.GetUserIdFromToken(validToken);
 
             // Assert
             userId.Should().Be(0);
@@ -77,10 +66,8 @@ namespace Authentication.UnitTests.Services
             // Arrange
             var validToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJyZXMiOiJlYmQiLCJuYmYiOjE2MTkyODMzMTYsImV4cCI6MTYxOTI4NjkxNiwiaWF0IjoxNjE5MjgzMzE2LCJpc3MiOiJBdXRoU2VydmljZSIsImF1ZCI6IkF1dGhTZXJ2aWNlIn0.lJ4EHFGQKc5OjFxismsLh4xgQV_IWuY1IUrZKVDFSArZ1mrUAtIA4Vdn1E05tKMzNQSxBBCg7jl3ystpBOX01w";
 
-            var sut = CreateService();
-
             // Act
-            var userId = sut.GetUserIdFromToken(validToken);
+            var userId = _sut.GetUserIdFromToken(validToken);
 
             // Assert
             userId.Should().Be(0);
@@ -92,10 +79,8 @@ namespace Authentication.UnitTests.Services
             // Arrange
             var validToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIiLCJyZXMiOiJlYmQiLCJuYmYiOjE2MTkyODMzMTYsImV4cCI6MTYxOTI4NjkxNiwiaWF0IjoxNjE5MjgzMzE2LCJpc3MiOiJBdXRoU2VydmljZSIsImF1ZCI6IkF1dGhTZXJ2aWNlIn0.3TRY9CSaAD3ai_NWmSteSRmu1nZy_Z0Iu_onJZpwembV32ekAKlQK2f7iR3E01sVqCeKks5hpQesmFPSZsBPcQ";
 
-            var sut = CreateService();
-
             // Act
-            var userId = sut.GetUserIdFromToken(validToken);
+            var userId = _sut.GetUserIdFromToken(validToken);
 
             // Assert
             userId.Should().Be(0);
@@ -107,10 +92,9 @@ namespace Authentication.UnitTests.Services
         public void GetUserIdFromToken_NullOrEmptyToken_ReturnsUserId(string nullOrEmptyToken)
         {
             // Arrange
-            var sut = CreateService();
 
             // Act
-            Func<int> act = () => sut.GetUserIdFromToken(nullOrEmptyToken);
+            Func<int> act = () => _sut.GetUserIdFromToken(nullOrEmptyToken);
 
             // Assert
             act.Should().Throw<ArgumentException>();
