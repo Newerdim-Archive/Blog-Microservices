@@ -1,6 +1,6 @@
 ﻿namespace Authentication.API.Responses
 {
-    public class RegisterResponse : ResponseBase
+    public class RegisterResponse : BaseResponse
     {
         public int UserId { get; set; }
     }
