@@ -26,6 +26,13 @@ namespace Authentication.API.Services
             _tokenSettings = tokenOptions.Value;
         }
 
+        /// <summary>
+        /// Create token
+        /// </summary>
+        /// <param name="claims"></param>
+        /// <param name="secret"></param>
+        /// <param name="expires"></param>
+        /// <returns></returns>
         private static string CreateToken(Claim[] claims, string secret, DateTimeOffset? expires)
         {
             var key = Encoding.UTF8.GetBytes(secret);
@@ -64,23 +71,33 @@ namespace Authentication.API.Services
         {
             if (string.IsNullOrWhiteSpace(token))
             {
-                throw new ArgumentException($"'{nameof(token)}' cannot be null or whitespace.", nameof(token));
+                throw new ArgumentException($"'{nameof(token)}' cannot be null or whitespace", nameof(token));
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
             if (!tokenHandler.CanReadToken(token))
             {
-                return 0;
+                throw new ArgumentException($"'{nameof(token)}' is invalid", nameof(token));
             }
 
             var claims = tokenHandler.ReadJwtToken(token).Claims;
 
-            var userIdValue = claims.FirstOrDefault(c => c.Type == CustomClaimTypes.UserId)?.Value;
+            var userIdClaim = claims.FirstOrDefault(c => c.Type == CustomClaimTypes.UserId);
 
-            var result = int.TryParse(userIdValue, out var userId);
+            if (userIdClaim is null)
+            {
+                throw new ArgumentException($"'{nameof(token)}' does not have userId", nameof(token));
+            }
 
-            return result ? userId : 0;
+            var isValidUserId = int.TryParse(userIdClaim.Value, out var userId);
+
+            if (!isValidUserId)
+            {
+                throw new ArgumentException($"'{nameof(userId)}' is invalid", nameof(token));
+            }
+
+            return userId;
         }
 
         public Task<string> CreateAccessTokenAsync(int userId)

@@ -9,7 +9,9 @@ namespace Authentication.API.Services
         /// Get user id from token
         /// </summary>
         /// <param name="token"></param>
-        /// <returns>User id if exists otherwise 0</returns>
+        /// <returns>User id</returns>\
+        /// <exception cref="ArgumentNullException">Throws when userId not exist in token</exception>
+        /// <exception cref="ArgumentException">Throws when token is empty, null or invalid</exception>
         int GetUserIdFromToken(string token);
 
         /// <summary>
@@ -17,7 +19,6 @@ namespace Authentication.API.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>Token</returns>
-        /// <exception cref="ArgumentException">Throws when userId is 0 or user with that id not exists</exception>
         Task<string> CreateAccessTokenAsync(int userId);
 
         /// <summary>
@@ -25,7 +26,6 @@ namespace Authentication.API.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>Token</returns>
-        /// <exception cref="ArgumentException">Throws when userId is 0 or user with that id not exists</exception>
         Task<string> CreateRefreshTokenAsync(int userId);
     }
 }

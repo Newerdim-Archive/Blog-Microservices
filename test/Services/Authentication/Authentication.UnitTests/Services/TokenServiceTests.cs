@@ -38,10 +38,10 @@ namespace Authentication.UnitTests.Services
         public void GetUserIdFromToken_ValidToken_ReturnsUserId()
         {
             // Arrange
-            var validToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIxIiwicmVzIjoiZW1jIiwibmJmIjoxNjE5MjgzMzE2LCJleHAiOjE2MTkyODY5MTYsImlhdCI6MTYxOTI4MzMxNiwiaXNzIjoiQXV0aFNlcnZpY2UiLCJhdWQiOiJBdXRoU2VydmljZSJ9.M4FAkPYmMIGFEyjDUH6_Uuf36u5CV1jNEDHhW67MEUy1b-m1T0Nyj6ewLn27ASjMk_KiYU3-BoXmtL56SIenmw";
+            var token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIxIiwicmVzIjoiZW1jIiwibmJmIjoxNjE5MjgzMzE2LCJleHAiOjE2MTkyODY5MTYsImlhdCI6MTYxOTI4MzMxNiwiaXNzIjoiQXV0aFNlcnZpY2UiLCJhdWQiOiJBdXRoU2VydmljZSJ9.M4FAkPYmMIGFEyjDUH6_Uuf36u5CV1jNEDHhW67MEUy1b-m1T0Nyj6ewLn27ASjMk_KiYU3-BoXmtL56SIenmw";
 
             // Act
-            var userId = _sut.GetUserIdFromToken(validToken);
+            var userId = _sut.GetUserIdFromToken(token);
 
             // Assert
             userId.Should().Be(1);
@@ -51,44 +51,45 @@ namespace Authentication.UnitTests.Services
         public void GetUserIdFromToken_InvalidToken_ReturnsUserId()
         {
             // Arrange
-            var validToken = "invalid";
+            var token = "invalid";
 
             // Act
-            var userId = _sut.GetUserIdFromToken(validToken);
+            Action act = () => _sut.GetUserIdFromToken(token);
 
             // Assert
-            userId.Should().Be(0);
+            act.Should().Throw<ArgumentException>();
         }
 
         [Fact]
-        public void GetUserIdFromToken_TokenWithoutUserId_ReturnsUserId()
+        public void GetUserIdFromToken_TokenWithoutUserId_ThrowsArgumentException()
         {
             // Arrange
-            var validToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJyZXMiOiJlYmQiLCJuYmYiOjE2MTkyODMzMTYsImV4cCI6MTYxOTI4NjkxNiwiaWF0IjoxNjE5MjgzMzE2LCJpc3MiOiJBdXRoU2VydmljZSIsImF1ZCI6IkF1dGhTZXJ2aWNlIn0.lJ4EHFGQKc5OjFxismsLh4xgQV_IWuY1IUrZKVDFSArZ1mrUAtIA4Vdn1E05tKMzNQSxBBCg7jl3ystpBOX01w";
+            var token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJyZXMiOiJlYmQiLCJuYmYiOjE2MTkyODMzMTYsImV4cCI6MTYxOTI4NjkxNiwiaWF0IjoxNjE5MjgzMzE2LCJpc3MiOiJBdXRoU2VydmljZSIsImF1ZCI6IkF1dGhTZXJ2aWNlIn0.lJ4EHFGQKc5OjFxismsLh4xgQV_IWuY1IUrZKVDFSArZ1mrUAtIA4Vdn1E05tKMzNQSxBBCg7jl3ystpBOX01w";
 
             // Act
-            var userId = _sut.GetUserIdFromToken(validToken);
+            Action act = () => _sut.GetUserIdFromToken(token);
 
             // Assert
-            userId.Should().Be(0);
+            act.Should().Throw<ArgumentException>();
         }
 
         [Fact]
-        public void GetUserIdFromToken_TokenWithEmptyUserId_ReturnsUserId()
+        public void GetUserIdFromToken_TokenWithEmptyUserId_ThrowsArgumentException()
         {
             // Arrange
-            var validToken = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIiLCJyZXMiOiJlYmQiLCJuYmYiOjE2MTkyODMzMTYsImV4cCI6MTYxOTI4NjkxNiwiaWF0IjoxNjE5MjgzMzE2LCJpc3MiOiJBdXRoU2VydmljZSIsImF1ZCI6IkF1dGhTZXJ2aWNlIn0.3TRY9CSaAD3ai_NWmSteSRmu1nZy_Z0Iu_onJZpwembV32ekAKlQK2f7iR3E01sVqCeKks5hpQesmFPSZsBPcQ";
+            var token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIiLCJyZXMiOiJlYmQiLCJuYmYiOjE2MTkyODMzMTYsImV4cCI6MTYxOTI4NjkxNiwiaWF0IjoxNjE5MjgzMzE2LCJpc3MiOiJBdXRoU2VydmljZSIsImF1ZCI6IkF1dGhTZXJ2aWNlIn0.3TRY9CSaAD3ai_NWmSteSRmu1nZy_Z0Iu_onJZpwembV32ekAKlQK2f7iR3E01sVqCeKks5hpQesmFPSZsBPcQ";
 
             // Act
-            var userId = _sut.GetUserIdFromToken(validToken);
+            Action act = () => _sut.GetUserIdFromToken(token);
 
             // Assert
-            userId.Should().Be(0);
+            act.Should().Throw<ArgumentException>();
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
+        [InlineData(" ")]
         public void GetUserIdFromToken_NullOrEmptyToken_ReturnsUserId(string nullOrEmptyToken)
         {
             // Arrange
