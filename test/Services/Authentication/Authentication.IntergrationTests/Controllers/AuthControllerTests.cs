@@ -27,7 +27,8 @@ namespace Authentication.IntergrationTests.Controllers
         public async Task Register_ValidModel_ReturnsOkWithUserIdAndMessage()
         {
             // Arrange
-            var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
+            var route = AuthControllerFullRoute.Register;
+
             var model = new RegisterModel
             {
                 Username = "User1234",
@@ -51,7 +52,8 @@ namespace Authentication.IntergrationTests.Controllers
         public async Task Register_InvalidModel_ReturnsBadRequestWithMessage()
         {
             // Arrange
-            var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
+            var route = AuthControllerFullRoute.Register;
+
             var model = new RegisterModel
             {
                 Username = null,
@@ -74,7 +76,8 @@ namespace Authentication.IntergrationTests.Controllers
         public async Task Register_EmailAlreadyExists_ReturnsUnauthorizedWithMessage()
         {
             // Arrange
-            var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
+            var route = AuthControllerFullRoute.Register;
+
             var model = new RegisterModel
             {
                 Username = "User1234",
@@ -97,7 +100,8 @@ namespace Authentication.IntergrationTests.Controllers
         public async Task Register_UsernameAlreadyExists_ReturnsUnauthorizedWithMessage()
         {
             // Arrange
-            var route = AuthControllerRoutes.Controller + "/" + AuthControllerRoutes.Register;
+            var route = AuthControllerFullRoute.Register;
+
             var model = new RegisterModel
             {
                 Username = "User1",
