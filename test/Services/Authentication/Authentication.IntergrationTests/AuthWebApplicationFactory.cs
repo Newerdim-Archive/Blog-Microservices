@@ -60,6 +60,8 @@ namespace Authentication.IntergrationTests
             });
         }
 
+        #region Private Methods
+
         private void SeedUsers(AuthDataContext context)
         {
             var users = new User[]
@@ -88,5 +90,7 @@ namespace Authentication.IntergrationTests
             context.Users.AddRange(users);
             context.SaveChanges();
         }
+
+        #endregion
     }
 }

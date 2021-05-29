@@ -138,6 +138,8 @@ namespace EmailSender.UnitTests.Consummers
             GC.SuppressFinalize(this);
         }
 
+        #region Private Methods
+
         /// <summary>
         /// Check if harness and consumer harness consumed SendEmailCommand
         /// </summary>
@@ -160,5 +162,7 @@ namespace EmailSender.UnitTests.Consummers
         {
             return await _harness.Published.Any<Fault<SendEmailCommand>>();
         }
+
+        #endregion
     }
 }

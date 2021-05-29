@@ -24,6 +24,14 @@ namespace Authentication.UnitTests.DataFixture
             return new AuthDataContext(options);
         }
 
+        public void Dispose()
+        {
+            Context.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        #region Private Methods
+
         private static void SeedUsers(AuthDataContext context)
         {
             var users = new User[]
@@ -53,10 +61,6 @@ namespace Authentication.UnitTests.DataFixture
             context.SaveChanges();
         }
 
-        public void Dispose()
-        {
-            Context.Dispose();
-            GC.SuppressFinalize(this);
-        }
+        #endregion
     }
 }

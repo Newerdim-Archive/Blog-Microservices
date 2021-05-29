@@ -70,34 +70,6 @@ namespace Authentication.API.Services
             };
         }
 
-        private User CreateNewUser(RegisterRequest request)
-        {
-            var (passwordHash, passwordSalt) = HashWithSalt(request.Password);
-
-            return new User
-            {
-                Username = request.Username,
-                Email = request.Email,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                Created = _dateProvider.GetUtcNow(),
-                LastChange = _dateProvider.GetUtcNow(),
-            };
-        }
-
-        /// <summary>
-        /// Hash text using salt
-        /// </summary>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        private static (byte[] hash, byte[] salt) HashWithSalt(string text)
-        {
-            using var hmac = new HMACSHA512();
-            var passwordBytes = Encoding.UTF8.GetBytes(text);
-
-            return (hmac.ComputeHash(passwordBytes), hmac.Key);
-        }
-
         public async Task<LoginResult> LoginAsync(LoginRequest request)
         {
             var userInDb = await GetUserByUsernameCaseInsensitive(request.Username);
@@ -125,6 +97,36 @@ namespace Authentication.API.Services
                 Message = LoginResultMessage.Successful,
                 UserId = userInDb.Id
             };
+        }
+
+        #region Private Methods
+
+        private User CreateNewUser(RegisterRequest request)
+        {
+            var (passwordHash, passwordSalt) = HashWithSalt(request.Password);
+
+            return new User
+            {
+                Username = request.Username,
+                Email = request.Email,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                Created = _dateProvider.GetUtcNow(),
+                LastChange = _dateProvider.GetUtcNow(),
+            };
+        }
+
+        /// <summary>
+        /// Hash text using salt
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        private static (byte[] hash, byte[] salt) HashWithSalt(string text)
+        {
+            using var hmac = new HMACSHA512();
+            var passwordBytes = Encoding.UTF8.GetBytes(text);
+
+            return (hmac.ComputeHash(passwordBytes), hmac.Key);
         }
 
         /// <summary>
@@ -171,5 +173,7 @@ namespace Authentication.API.Services
 
             return hash.SequenceEqual(computedHash);
         }
+
+        #endregion
     }
 }

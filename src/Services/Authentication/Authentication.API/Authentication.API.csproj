@@ -40,8 +40,4 @@
     <ProjectReference Include="..\..\..\Building Blocks\EventBus\EventBus.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Publishers\" />
-  </ItemGroup>
-
 </Project>

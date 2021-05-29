@@ -39,20 +39,6 @@ namespace Authentication.UnitTests.Controllers
             _sut = controller;
         }
 
-        private ControllerContext CreateControllerContext()
-        {
-            _httpResponseMock.Setup(x => x.Cookies)
-                .Returns(_responseCookiesMock.Object);
-
-            _httpContextMock.Setup(x => x.Response)
-                .Returns(_httpResponseMock.Object);
-
-            var controllerContext = new ControllerContext();
-            controllerContext.HttpContext = _httpContextMock.Object;
-
-            return controllerContext;
-        }
-
         #region Register
 
         [Fact]
@@ -350,5 +336,23 @@ namespace Authentication.UnitTests.Controllers
         }
 
         #endregion Login
+
+        #region Private Methods
+
+        private ControllerContext CreateControllerContext()
+        {
+            _httpResponseMock.Setup(x => x.Cookies)
+                .Returns(_responseCookiesMock.Object);
+
+            _httpContextMock.Setup(x => x.Response)
+                .Returns(_httpResponseMock.Object);
+
+            var controllerContext = new ControllerContext();
+            controllerContext.HttpContext = _httpContextMock.Object;
+
+            return controllerContext;
+        }
+
+        #endregion
     }
 }

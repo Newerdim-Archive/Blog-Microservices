@@ -26,47 +26,6 @@ namespace Authentication.API.Services
             _tokenSettings = tokenOptions.Value;
         }
 
-        /// <summary>
-        /// Create token
-        /// </summary>
-        /// <param name="claims"></param>
-        /// <param name="secret"></param>
-        /// <param name="expires"></param>
-        /// <returns></returns>
-        private static string CreateToken(Claim[] claims, string secret, DateTimeOffset? expires)
-        {
-            var key = Encoding.UTF8.GetBytes(secret);
-            var symmetricKey = new SymmetricSecurityKey(key);
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = expires?.DateTime,
-                SigningCredentials = new SigningCredentials(
-                    symmetricKey,
-                    SecurityAlgorithms.HmacSha512Signature)
-            };
-
-            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(securityToken);
-        }
-
-        private static TokenValidationParameters GetValidationParameters(bool validateLifetime, string secret)
-        {
-            var key = Encoding.UTF8.GetBytes(secret);
-
-            return new TokenValidationParameters()
-            {
-                ValidateLifetime = validateLifetime,
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                IssuerSigningKey = new SymmetricSecurityKey(key)
-            };
-        }
-
         public int GetUserIdFromToken(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
@@ -131,5 +90,50 @@ namespace Authentication.API.Services
 
             return Task.FromResult(token);
         }
+
+        #region Private Methods
+
+        /// <summary>
+        /// Create token
+        /// </summary>
+        /// <param name="claims"></param>
+        /// <param name="secret"></param>
+        /// <param name="expires"></param>
+        /// <returns></returns>
+        private static string CreateToken(Claim[] claims, string secret, DateTimeOffset? expires)
+        {
+            var key = Encoding.UTF8.GetBytes(secret);
+            var symmetricKey = new SymmetricSecurityKey(key);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = expires?.DateTime,
+                SigningCredentials = new SigningCredentials(
+                    symmetricKey,
+                    SecurityAlgorithms.HmacSha512Signature)
+            };
+
+            var securityToken = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(securityToken);
+        }
+
+        private static TokenValidationParameters GetValidationParameters(bool validateLifetime, string secret)
+        {
+            var key = Encoding.UTF8.GetBytes(secret);
+
+            return new TokenValidationParameters()
+            {
+                ValidateLifetime = validateLifetime,
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                IssuerSigningKey = new SymmetricSecurityKey(key)
+            };
+        }
+
+        #endregion
     }
 }
