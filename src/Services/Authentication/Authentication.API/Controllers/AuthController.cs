@@ -4,7 +4,6 @@ using Authentication.API.Helpers;
 using Authentication.API.Models;
 using Authentication.API.Responses;
 using Authentication.API.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -57,10 +56,13 @@ namespace Authentication.API.Controllers
             {
                 case RegisterResultMessage.Successful:
                     break;
+
                 case RegisterResultMessage.EmailAlreadyExists:
                     return Unauthorized(ResponseMessage.EmailAlreadyExists);
+
                 case RegisterResultMessage.UsernameAlreadyExists:
                     return Unauthorized(ResponseMessage.UsernameAlreadyExists);
+
                 default:
                     throw new NotImplementedException($"Register does not implement" +
                         $" result message with name: " +
@@ -137,8 +139,8 @@ namespace Authentication.API.Controllers
             var cookieOptions = new CookieOptions { HttpOnly = true };
 
             HttpContext.Response.Cookies.Append(cookieName, token, cookieOptions);
-        } 
+        }
 
-        #endregion
+        #endregion Private Methods
     }
 }

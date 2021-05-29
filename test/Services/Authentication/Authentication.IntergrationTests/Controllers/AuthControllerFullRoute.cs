@@ -14,6 +14,6 @@ namespace Authentication.IntergrationTests.Controllers
             return $"{AuthControllerRoutes.Controller}/{endpoint}";
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

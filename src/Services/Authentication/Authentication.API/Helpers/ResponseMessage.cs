@@ -8,7 +8,7 @@
         public const string EmailAlreadyExists = "User with this email already exists";
         public const string UsernameAlreadyExists = "User with this username already exists";
 
-        #endregion
+        #endregion Register
 
         #region Login
 
@@ -16,6 +16,6 @@
         public const string PasswordNotMatch = "Password does not match";
         public const string UserNotExist = "User does not exist";
 
-        #endregion
+        #endregion Login
     }
 }

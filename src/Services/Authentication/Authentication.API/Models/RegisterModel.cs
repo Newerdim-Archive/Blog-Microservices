@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Authentication.API.Models
+﻿namespace Authentication.API.Models
 {
     public class RegisterModel
     {

@@ -115,7 +115,7 @@ namespace Authentication.IntergrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
             responseContent.Should().Contain("username already exists");
         }
-        
+
         #endregion Register
 
         #region Login

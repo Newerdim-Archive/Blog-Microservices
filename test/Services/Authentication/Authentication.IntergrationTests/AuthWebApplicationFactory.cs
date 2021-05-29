@@ -91,6 +91,6 @@ namespace Authentication.IntergrationTests
             context.SaveChanges();
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

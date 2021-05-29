@@ -110,7 +110,7 @@ namespace Authentication.UnitTests.Services
             var userInDb = await _context.Users.FirstAsync(u => u.Id == response.UserId);
 
             using var hmac = new HMACSHA512(userInDb.PasswordSalt);
-            
+
             var computedPasswordHash = hmac.ComputeHash(passwordBytes);
 
             var isPasswordEquel = userInDb.PasswordHash.SequenceEqual(computedPasswordHash);

@@ -174,6 +174,6 @@ namespace Authentication.API.Services
             return hash.SequenceEqual(computedHash);
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

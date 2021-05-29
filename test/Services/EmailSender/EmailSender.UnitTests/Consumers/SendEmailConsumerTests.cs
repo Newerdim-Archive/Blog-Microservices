@@ -2,7 +2,6 @@ using EmailSender.API.Dtos;
 using EmailSender.API.Services;
 using EventBus.Commands;
 using EventBus.Messages;
-using EventBus.Results;
 using FluentAssertions;
 using MassTransit;
 using MassTransit.Testing;
@@ -49,7 +48,7 @@ namespace EmailSender.UnitTests.Consummers
             isConsumed.Should().BeTrue();
 
             _emailSenderServiceMock.Verify(x => x
-                .SendAsync(It.IsAny<SendRequest>()), 
+                .SendAsync(It.IsAny<SendRequest>()),
                 Times.Exactly(2));
         }
 
@@ -77,7 +76,9 @@ namespace EmailSender.UnitTests.Consummers
             isConsumed.Should().BeTrue();
             isAnyPublishedFault.Should().BeTrue();
 
-            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Never);
+            _emailSenderServiceMock.Verify(x => x
+                .SendAsync(It.IsAny<SendRequest>()),
+                Times.Never);
         }
 
         [Theory]
@@ -104,7 +105,9 @@ namespace EmailSender.UnitTests.Consummers
             isConsumed.Should().BeTrue();
             isAnyPublishedFault.Should().BeTrue();
 
-            _emailSenderServiceMock.Verify(x => x.SendAsync(It.IsAny<SendRequest>()), Times.Never);
+            _emailSenderServiceMock.Verify(x => x
+                .SendAsync(It.IsAny<SendRequest>()),
+                Times.Never);
         }
 
         [Fact]
@@ -128,7 +131,7 @@ namespace EmailSender.UnitTests.Consummers
             isAnyPublishedFault.Should().BeTrue();
 
             _emailSenderServiceMock.Verify(x => x
-                .SendAsync(It.IsAny<SendRequest>()), 
+                .SendAsync(It.IsAny<SendRequest>()),
                 Times.Never);
         }
 
@@ -163,6 +166,6 @@ namespace EmailSender.UnitTests.Consummers
             return await _harness.Published.Any<Fault<SendEmailCommand>>();
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

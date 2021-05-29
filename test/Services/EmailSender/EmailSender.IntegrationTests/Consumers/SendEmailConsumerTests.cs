@@ -2,7 +2,6 @@
 using EmailSender.IntergrationTests;
 using EventBus.Commands;
 using EventBus.Messages;
-using EventBus.Results;
 using FluentAssertions;
 using MassTransit;
 using MassTransit.Testing;
@@ -170,8 +169,8 @@ namespace EmailSender.IntegrationTests.Consumers
         private async Task<bool> IsAnyPublishedFaultAsync<TMessage>() where TMessage : class
         {
             return await _harness.Published.Any<Fault<SendEmailCommand>>();
-        } 
+        }
 
-        #endregion
+        #endregion Private Methods
     }
 }

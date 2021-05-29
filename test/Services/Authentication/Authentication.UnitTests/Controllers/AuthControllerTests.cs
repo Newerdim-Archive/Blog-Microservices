@@ -1,6 +1,7 @@
 ﻿using Authentication.API.Controllers;
 using Authentication.API.Dtos;
 using Authentication.API.Enums;
+using Authentication.API.Helpers;
 using Authentication.API.Models;
 using Authentication.API.Responses;
 using Authentication.API.Services;
@@ -330,9 +331,9 @@ namespace Authentication.UnitTests.Controllers
             // Assert
             _responseCookiesMock.Verify(x => x
                 .Append(
-                    It.Is<string>(x => x == "refresh_token"),
-                    It.Is<string>(x => x == excpetedToken),
-                    It.Is<CookieOptions>(x => x.HttpOnly == true)));
+                    It.Is<string>(key => key == CookieName.RefreshToken),
+                    It.Is<string>(value => value == excpetedToken),
+                    It.Is<CookieOptions>(opt => opt.HttpOnly == true)));
         }
 
         #endregion Login
@@ -353,6 +354,6 @@ namespace Authentication.UnitTests.Controllers
             return controllerContext;
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

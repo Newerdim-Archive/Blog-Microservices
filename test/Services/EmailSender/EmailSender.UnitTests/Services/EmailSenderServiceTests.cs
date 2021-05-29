@@ -52,8 +52,8 @@ namespace EmailSender.UnitTests.Services
             // Assert
             await act.Should().ThrowAsync<ArgumentNullException>();
 
-            _smtpClient.Verify(x =>
-                x.SendMailAsync(It.IsAny<MailMessage>()),
+            _smtpClient.Verify(x => x
+                .SendMailAsync(It.IsAny<MailMessage>()),
                 Times.Never);
         }
 
@@ -73,8 +73,8 @@ namespace EmailSender.UnitTests.Services
             // Assert
             await act.Should().ThrowAsync<FluentValidationException>();
 
-            _smtpClient.Verify(x =>
-                x.SendMailAsync(It.IsAny<MailMessage>()),
+            _smtpClient.Verify(x => x
+                .SendMailAsync(It.IsAny<MailMessage>()),
                 Times.Never);
         }
     }

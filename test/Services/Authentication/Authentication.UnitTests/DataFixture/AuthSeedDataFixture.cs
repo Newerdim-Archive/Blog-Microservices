@@ -61,6 +61,6 @@ namespace Authentication.UnitTests.DataFixture
             context.SaveChanges();
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }

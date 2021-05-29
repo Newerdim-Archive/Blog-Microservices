@@ -1,7 +1,5 @@
-﻿using Authentication.API.Data;
-using Authentication.API.Helpers;
+﻿using Authentication.API.Helpers;
 using Authentication.API.Providers;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -134,6 +132,6 @@ namespace Authentication.API.Services
             };
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }
