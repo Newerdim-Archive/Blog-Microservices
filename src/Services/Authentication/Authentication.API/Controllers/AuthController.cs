@@ -58,9 +58,9 @@ namespace Authentication.API.Controllers
                 case RegisterResultMessage.Successful:
                     break;
                 case RegisterResultMessage.EmailAlreadyExists:
-                    return Unauthorized("User with this email already exists");
+                    return Unauthorized(ResponseMessage.EmailAlreadyExists);
                 case RegisterResultMessage.UsernameAlreadyExists:
-                    return Unauthorized("User with this username already exists");
+                    return Unauthorized(ResponseMessage.UsernameAlreadyExists);
                 default:
                     throw new NotImplementedException($"Register does not implement" +
                         $" result message with name: " +
@@ -69,7 +69,7 @@ namespace Authentication.API.Controllers
 
             return Ok(new RegisterResponse
             {
-                Message = "Registered successfully",
+                Message = ResponseMessage.RegisteredSuccessfully,
                 UserId = registerResult.UserId
             });
         }
@@ -103,10 +103,10 @@ namespace Authentication.API.Controllers
                     break;
 
                 case LoginResultMessage.PasswordNotMatch:
-                    return Unauthorized("Password does not match");
+                    return Unauthorized(ResponseMessage.PasswordNotMatch);
 
                 case LoginResultMessage.UserNotExist:
-                    return Unauthorized("User does not exist");
+                    return Unauthorized(ResponseMessage.UserNotExist);
 
                 default:
                     throw new NotImplementedException(
@@ -122,7 +122,7 @@ namespace Authentication.API.Controllers
 
             return Ok(new LoginResponse
             {
-                Message = "Logged in successfully",
+                Message = ResponseMessage.LoggedInSuccessfully,
                 UserId = result.UserId,
                 AccessToken = accessToken
             });
