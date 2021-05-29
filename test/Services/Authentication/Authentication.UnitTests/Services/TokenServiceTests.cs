@@ -22,7 +22,6 @@ namespace Authentication.UnitTests.Services
         {
             _tokenSettingsOptionsMock.Setup(x => x.Value).Returns(new TokenSettings
             {
-                EmailConfirmationSecret = "SecretForEmailConfirmation",
                 AccessTokenSecret = "SecretForAccessToken",
                 RefreshTokenSecret = "SecretForRefreshToken"
             });
