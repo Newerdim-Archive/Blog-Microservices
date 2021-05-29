@@ -269,7 +269,8 @@ namespace Authentication.IntergrationTests.Controllers
 
             var cookies = response.Headers.GetValues("Set-Cookie");
 
-            var refreshToken = cookies.FirstOrDefault(c => c.Contains("refresh_token"));
+            var refreshToken = cookies
+                .FirstOrDefault(c => c.Contains(CookieName.RefreshToken));
 
             // Assert
             refreshToken.Should().NotBeNullOrWhiteSpace();
