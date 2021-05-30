@@ -4,6 +4,7 @@ using Authentication.API.Entities;
 using Authentication.API.Enums;
 using Authentication.API.Providers;
 using Authentication.API.Validators;
+using EmailSender.API.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -27,11 +28,11 @@ namespace Authentication.API.Services
         public async Task<RegisterResult> RegisterAsync(RegisterRequest request)
         {
             var validator = new RegisterRequestValidator();
-            var result = await validator.ValidateAsync(request);
+            var validationResult = await validator.ValidateAsync(request);
 
-            if (!result.IsValid)
+            if (!validationResult.IsValid)
             {
-                throw new ArgumentException($"{typeof(RegisterRequest)} is invalid. Errors: {string.Concat(result.Errors)}");
+                throw new FluentValidationException(typeof(RegisterRequest), validationResult, nameof(request));
             }
 
             var isUserWithSameEmailInDb = _context.Users
@@ -72,6 +73,15 @@ namespace Authentication.API.Services
 
         public async Task<LoginResult> LoginAsync(LoginRequest request)
         {
+            var validator = new LoginRequestValidator();
+
+            var validationResult = await validator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            { 
+                throw new FluentValidationException(typeof(RegisterRequest), validationResult, nameof(request));
+            }
+
             var userInDb = await GetUserByUsernameCaseInsensitive(request.Username);
 
             if (userInDb is null)

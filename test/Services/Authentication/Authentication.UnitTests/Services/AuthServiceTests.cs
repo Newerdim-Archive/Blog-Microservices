@@ -5,6 +5,7 @@ using Authentication.API.Providers;
 using Authentication.API.Services;
 using Authentication.UnitTests.DataFixture;
 using AutoFixture.Xunit2;
+using EmailSender.API.Exceptions;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -120,7 +121,7 @@ namespace Authentication.UnitTests.Services
         }
 
         [Fact]
-        public async Task Register_InvalidRequest_ThrowsArgumentException()
+        public async Task Register_InvalidRequest_FluentValidationException()
         {
             // Arrange
             var request = new RegisterRequest
@@ -134,7 +135,7 @@ namespace Authentication.UnitTests.Services
             Func<Task> act = async () => await _sut.RegisterAsync(request);
 
             // Assert
-            await act.Should().ThrowAsync<ArgumentException>();
+            await act.Should().ThrowAsync<FluentValidationException>();
         }
 
         [Fact]
@@ -291,6 +292,35 @@ namespace Authentication.UnitTests.Services
             // Assert
             result.UserId.Should().Be(0);
             result.Message.Should().Be(LoginResultMessage.UserNotExist);
+        }
+
+        [Fact]
+        public async Task Login_InvalidRequest_ThrowsFluentValidationException()
+        {
+            // Arrange
+            var request = new LoginRequest
+            {
+                Username = null,
+                Password = null
+            };
+
+            // Act
+            Func<Task> act = async () => await _sut.LoginAsync(request);
+
+            // Assert
+            await act.Should().ThrowAsync<FluentValidationException>();
+        }
+
+        [Fact]
+        public async Task Login_NullRequest_ThrowsArgumentNullException()
+        {
+            // Arrange
+
+            // Act
+            Func<Task> act = async () => await _sut.LoginAsync(null);
+
+            // Assert
+            await act.Should().ThrowAsync<ArgumentNullException>();
         }
 
         #endregion Login
