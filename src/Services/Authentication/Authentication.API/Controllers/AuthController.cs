@@ -147,7 +147,7 @@ namespace Authentication.API.Controllers
 
             if (refreshTokenFromRequest is null)
             {
-                return Unauthorized("Refresh token is empty or does not exists");
+                return Unauthorized(ResponseMessage.RefreshTokenIsNullOrEmpty);
             }
 
             var isValidRefreshTokenFromRequest = await _tokenService
@@ -155,7 +155,7 @@ namespace Authentication.API.Controllers
 
             if (!isValidRefreshTokenFromRequest)
             {
-                return Unauthorized("Refresh token is invalid");
+                return Unauthorized(ResponseMessage.RefreshTokenIsInvalid);
             }
 
             var userId = _tokenService.GetUserIdFromToken(refreshTokenFromRequest);
@@ -168,7 +168,7 @@ namespace Authentication.API.Controllers
 
             return Ok(new RefreshTokensResponse
             {
-                Message = "Tokens refreshed successfully",
+                Message = ResponseMessage.TokensRefreshedSuccessfully,
                 AccessToken = accessToken
             });
         }
@@ -191,7 +191,7 @@ namespace Authentication.API.Controllers
         private string GetRefreshTokenFromRequest()
         {
             var tokenExists = Request.Cookies
-                .TryGetValue("refresh_token", out var refreshToken);
+                .TryGetValue(CookieName.RefreshToken, out var refreshToken);
 
             if (!tokenExists)
             {

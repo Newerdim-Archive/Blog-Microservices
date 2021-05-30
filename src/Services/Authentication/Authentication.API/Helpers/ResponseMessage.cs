@@ -17,5 +17,13 @@
         public const string UserNotExist = "User does not exist";
 
         #endregion Login
+
+        #region RefreshTokens
+
+        public const string RefreshTokenIsNullOrEmpty = "Refresh token is empty or does not exists";
+        public const string RefreshTokenIsInvalid = "Refresh token is invalid";
+        public const string TokensRefreshedSuccessfully = "Tokens refreshed successfully";
+
+        #endregion
     }
 }
