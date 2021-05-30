@@ -7,8 +7,11 @@ namespace Authentication.API.Validators
     {
         public LoginRequestValidator()
         {
-            RuleFor(x => x.Username).NotEmpty();
-            RuleFor(x => x.Password).NotEmpty();
+            RuleFor(x => x.Username)
+                .NotEmpty();
+
+            RuleFor(x => x.Password)
+                .NotEmpty();
         }
     }
 }
