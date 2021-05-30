@@ -220,7 +220,10 @@ namespace Authentication.UnitTests.Services
         [Theory]
         [InlineData("User1", "User1!@#", 1)]
         [InlineData("User2", "User2!@#", 2)]
-        public async Task Login_ValidRequest_ReturnsValidUserId(string username, string password, int expectedUserId)
+        public async Task Login_ValidRequest_ReturnsValidUserId(
+            string username, 
+            string password, 
+            int expectedUserId)
         {
             // Arrange
             var request = new LoginRequest
