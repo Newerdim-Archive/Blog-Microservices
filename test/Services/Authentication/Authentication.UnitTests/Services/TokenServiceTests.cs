@@ -177,5 +177,66 @@ namespace Authentication.UnitTests.Services
         }
 
         #endregion CreateRefreshTokenAsync
+
+        #region IsValidRefreshTokenAsync
+
+        [Fact]
+        public async Task IsValidRefreshTokenAsync_ValidToken_ReturnsTrue()
+        {
+            // Arrange
+            var token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIxIiwibmJmIjoxNjIxOTY5MjI4LCJleHAiOjIwMjE5NjI5MjgsImlhdCI6MTYyMTk2OTIyOH0.2ZvCxrG8YvSdyrdkps1lU1FS1rmi5xYprkDVYPg9I3r2aYiIAGWWOQCB7jFLLeuMvFiy97VSiuA_P7SvC7g5aQ";
+
+            // Act
+            var result = await _sut.IsValidRefreshTokenAsync(token);
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task IsValidRefreshTokenAsync_InvalidToken_ReturnsFalse()
+        {
+            // Arrange
+            var token = "invalid";
+
+            // Act
+            var result = await _sut.IsValidRefreshTokenAsync(token);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Theory]
+        // Null userId. Valid until 2034
+        [InlineData("eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOm51bGwsIm5iZiI6MTYyMTk2OTIyOCwiZXhwIjoyMDIxOTYyOTI4LCJpYXQiOjE2MjE5NjkyMjh9.IKks3Oaz74CxfEcSjAo9Oyev43CMd6g3N3MVOmp9CjJtkyIbCdxkXqiSCL1fULTjCOBcVkcb-RuPiVxD2_-goA")]
+        // Empty userId. Valid until 2034
+        [InlineData("eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIiLCJuYmYiOjE2MjE5NjkyMjgsImV4cCI6MjAyMTk2MjkyOCwiaWF0IjoxNjIxOTY5MjI4fQ.OtMrS7TKoQpSodYaschK4Sm7bKodqNR-vUptu0dY2TBGb_E5g-NJoZbnIS_R4dd9TRuqp8t9x-zwL55tGjJweA")]
+        public async Task IsValidRefreshTokenAsync_NullOrEmptyUserIdInToken_ReturnsFalse(
+            string token)
+        {
+            // Arrange
+
+            // Act
+            var result = await _sut.IsValidRefreshTokenAsync(token);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task IsValidRefreshTokenAsync_TokenNotHaveUserId_ReturnsFalse()
+        {
+            // Arrange
+            // Valid until 2034
+            var token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE2MjE5NjkyMjgsImV4cCI6MjAyMTk2MjkyOCwiaWF0IjoxNjIxOTY5MjI4fQ.2OPngTHDQNhf4YuiwgOl-duBTS1BP__2orbasH74flILm9Hr9_YLjI8MTXAQbctzEixn3KUmBFy-X0aCEoW5zQ";
+
+            // Act
+            var result = await _sut.IsValidRefreshTokenAsync(token);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        #endregion
     }
 }

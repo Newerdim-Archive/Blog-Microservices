@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Authentication.API.Controllers
@@ -130,6 +131,48 @@ namespace Authentication.API.Controllers
             });
         }
 
+        /// <summary>
+        /// Refresh access and refresh token
+        /// </summary>
+        /// <returns>Access token</returns>
+        /// <response code="200">Returns access token with message</response>
+        /// <response code="401">If token is invalid or not exist</response>
+        [HttpPost(AuthControllerRoutes.RefreshTokens)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(RefreshTokensResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [Produces("application/json")]
+        public async Task<IActionResult> RefreshTokens()
+        {
+            var refreshTokenFromRequest = GetRefreshTokenFromRequest();
+
+            if (refreshTokenFromRequest is null)
+            {
+                return Unauthorized("Refresh token is empty or does not exists");
+            }
+
+            var isValidRefreshTokenFromRequest = await _tokenService
+                .IsValidRefreshTokenAsync(refreshTokenFromRequest);
+
+            if (!isValidRefreshTokenFromRequest)
+            {
+                return Unauthorized("Refresh token is invalid");
+            }
+
+            var userId = _tokenService.GetUserIdFromToken(refreshTokenFromRequest);
+
+            var refreshToken = await _tokenService.CreateRefreshTokenAsync(userId);
+
+            var accessToken = await _tokenService.CreateAccessTokenAsync(userId);
+
+            AddRefreshTokenToCookies(refreshToken);
+
+            return Ok(new RefreshTokensResponse
+            {
+                Message = "Tokens refreshed successfully",
+                AccessToken = accessToken
+            });
+        }
+
         #region Private Methods
 
         private void AddRefreshTokenToCookies(string token)
@@ -139,6 +182,28 @@ namespace Authentication.API.Controllers
             var cookieOptions = new CookieOptions { HttpOnly = true };
 
             HttpContext.Response.Cookies.Append(cookieName, token, cookieOptions);
+        }
+
+        /// <summary>
+        /// Get refresh token from request
+        /// </summary>
+        /// <returns>Refresh token if exists and is not null or empty, otherwise null</returns>
+        private string GetRefreshTokenFromRequest()
+        {
+            var tokenExists = Request.Cookies
+                .TryGetValue("refresh_token", out var refreshToken);
+
+            if (!tokenExists)
+            {
+                return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                return null;
+            }
+
+            return refreshToken;
         }
 
         #endregion Private Methods

@@ -3,6 +3,7 @@ using Authentication.API.Providers;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
@@ -15,6 +16,7 @@ namespace Authentication.API.Services
     {
         private readonly IDateProvider _dateProvider;
         private readonly TokenSettings _tokenSettings;
+        private readonly JwtSecurityTokenHandler _tokenHandler = new();
 
         public TokenService(
             IDateProvider dateProvider,
@@ -87,6 +89,40 @@ namespace Authentication.API.Services
             var token = CreateToken(claims, secret, expires);
 
             return Task.FromResult(token);
+        }
+
+        public Task<bool> IsValidRefreshTokenAsync(string token)
+        {
+            var validationParameters = GetValidationParameters(true, _tokenSettings.RefreshTokenSecret);
+
+            IEnumerable<Claim> claims;
+
+            try
+            {
+                var result = _tokenHandler.ValidateToken(token, validationParameters, out _);
+                claims = result.Claims;
+            }
+            catch
+            {
+                return Task.FromResult(false);
+            }
+
+            var userIdClaim = claims
+                .FirstOrDefault(x => x.Type == CustomClaimTypes.UserId);
+
+            if (userIdClaim is null)
+            {
+                return Task.FromResult(false);
+            }
+
+            var isValidUserId = int.TryParse(userIdClaim.Value, out _);
+
+            if (!isValidUserId)
+            {
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
         }
 
         #region Private Methods

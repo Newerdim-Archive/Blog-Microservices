@@ -27,5 +27,13 @@ namespace Authentication.API.Services
         /// <param name="userId"></param>
         /// <returns>Token</returns>
         Task<string> CreateRefreshTokenAsync(int userId);
+
+        /// <summary>
+        /// Check if refresh token is valid and has all required claims
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns>True if token is valid, otherwise false</returns>
+        /// <exception cref="ArgumentException">Throws when token is null or empty</exception>
+        Task<bool> IsValidRefreshTokenAsync(string token);
     }
 }
