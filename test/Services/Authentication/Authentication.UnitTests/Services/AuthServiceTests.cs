@@ -119,67 +119,15 @@ namespace Authentication.UnitTests.Services
             isPasswordEquel.Should().BeTrue();
         }
 
-        [Theory]
-        [InlineAutoData("")]
-        [InlineAutoData(" ")]
-        [InlineAutoData(null)]
-        public async Task Register_NullEmptyUsername_ThrowsArgumentException(
-            string username,
-            MailAddress email)
+        [Fact]
+        public async Task Register_InvalidRequest_ThrowsArgumentException()
         {
             // Arrange
             var request = new RegisterRequest
             {
-                Username = username,
-                Email = email.Address,
-                Password = "Password123!@#"
-            };
-
-            // Act
-            Func<Task> act = async () => await _sut.RegisterAsync(request);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>();
-        }
-
-        [Theory]
-        [InlineAutoData("")]
-        [InlineAutoData(" ")]
-        [InlineAutoData(null)]
-        public async Task Register_NullEmptyEmail_ThrowsArgumentException(
-            string email,
-            string username)
-        {
-            // Arrange
-            var request = new RegisterRequest
-            {
-                Username = username,
-                Email = email,
-                Password = "Password123!@#"
-            };
-
-            // Act
-            Func<Task> act = async () => await _sut.RegisterAsync(request);
-
-            // Assert
-            await act.Should().ThrowAsync<ArgumentException>();
-        }
-
-        [Theory]
-        [InlineAutoData("")]
-        [InlineAutoData(" ")]
-        [InlineAutoData(null)]
-        public async Task Register_NullEmptyPassword_ThrowsArgumentException(
-            string password,
-            string username,
-            MailAddress email)
-        {
-            // Arrange
-            var request = new RegisterRequest
-            {
-                Username = username,
-                Email = email.Address,
-                Password = password
+                Username = null,
+                Email = null,
+                Password = null
             };
 
             // Act
